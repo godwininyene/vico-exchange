@@ -1,0 +1,17 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-primary-light: #FC9A04;
+  --color-primary-dark:#DF7200;
+  /* Text Colors */
+  --color-text: #e2e8f0;      /* Light gray */
+  --color-text-light: #94a3b8; /* Medium gray */
+  --color-text-lighter: #cbd5e1; /* Brighter gray */
+}
+.navbar-default {
+    @apply backdrop-blur-[10px] px-2 bg-[rgba(0,21,15,0.3)] border border-[rgb(255,255,255,0.1)];
+}
+
+
