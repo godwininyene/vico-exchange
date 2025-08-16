@@ -5,6 +5,7 @@ import { Outlet } from "react-router-dom";
 import ScrollToTop from "../components/ScrollToTop";
 
 const AuthenticatedLayout = ({ children }) => {
+   const user = JSON.parse(localStorage.getItem('user'));
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -22,14 +23,6 @@ const AuthenticatedLayout = ({ children }) => {
   }, []);
 
   //   const user = JSON.parse(localStorage.getItem('user'));
-
-  // Mock user
-  const user = {
-    name: "Mathew John",
-    email: 'mark@gmail.com',
-    role: 'admin'
-  };
-
   return (
     <div className="flex h-screen bg-gray-100 dark:bg-gray-900 overflow-hidden">
       <ScrollToTop />

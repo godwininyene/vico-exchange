@@ -1,13 +1,32 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import InputField from '../../components/InputField';
 import logo from './../../assets/images/logo.png'
 import bg from './../../assets/images/about-01.jpg';
 import { Link } from 'react-router-dom';
 import Button from '../../components/Button';
 import { FiLogIn } from "react-icons/fi";
+import{useSearchParams, useNavigate} from 'react-router-dom'
+import axios from '../../lib/axios';
 
-export default function Login({ status, }) {
+export default function Login() {
+    const[searchParams, setSearchParams] = useSearchParams(); 
+    let pathname = searchParams.get("redirectTo")||null
+    const message = searchParams.get("message")|| null;
+    const[processing, setProcessing] = useState(false);
+    const[error, setError] = useState();
 
+    const [formData, setFormData] = useState({
+        email:'',
+        password: '',
+    });
+
+
+    const handleChange = e =>{
+        const{name, value} = e.target;
+        setFormData({...formData, [name]: value})
+    }
+
+    const navigate = useNavigate();
     // Prevent scrolling on desktop
     useEffect(() => {
         if (window.innerWidth >= 768) {
@@ -17,8 +36,35 @@ export default function Login({ status, }) {
             };
         }
     }, []);
-    const handleSubmit = (e) => {
+    const handleSubmit = async(e) => {
         e.preventDefault();
+        let goTo;
+        setProcessing(true)
+        try {
+            const response = await axios.post('api/v1/users/login', formData);
+            if(response.data.status=='success'){
+                localStorage.setItem("user", JSON.stringify(response.data.data.user));
+                if(response.data.data.user.role === 'user'){
+                    goTo = pathname || '/user/dashboard' 
+                }
+                if(response.data.data.user.role === 'admin'){
+                    goTo = pathname || '/admin/dashboard'
+                    console.log('True');
+                }
+                navigate(goTo)
+            }
+            
+        } catch (err) {
+            if (err.response && err.response.data.message) {
+                setError(err.response.data.message);
+                console.log(err.response.data.message);
+            } else {
+                setError('No response received from the server.');
+                console.log('Unexpected Error:', err);
+            }
+        } finally {
+            setProcessing(false);
+        }
     };
 
     return (
@@ -66,20 +112,36 @@ export default function Login({ status, }) {
                         <div className='px-4 py-6 md:p-10 bg-white dark:bg-slate-800   rounded-lg shadow-lg'>
                             <h3 className='font-bold text-2xl mb-1 dark:text-white'>Login</h3>
                             <p className='text-sm font-medium leading-[1.6] mb-8 dark:text-white'>Enter your login credentials to continue.</p>
-                            {status && <div className="mb-7 font-medium text-sm text-green-600">{status}</div>}
+                            {error && (
+                                <div className="mb-2 font-medium text-sm text-red-600 dark:text-red-400">
+                                    {error}
+                                </div>
+                            )}
+                            
+                            {message && (
+                                <h2 className="text-[#cc0000] dark:text-red-400">
+                                    {message}
+                                </h2>
+                            )}
                             <form onSubmit={handleSubmit}>
                                 <InputField
                                     type='email'
                                     label='Email'
+                                    name='email'
                                     placeholder="Enter your email"
                                     classNames='mb-4'
+                                    value={formData['email' || " "]}
+                                    onChange={handleChange}
                                 />
 
                                 <InputField
                                     type='password'
                                     label='Password'
+                                    name='password'
                                     placeholder="Enter your password"
                                     classNames='mb-4'
+                                    value={formData['password' || " "]}
+                                    onChange={handleChange}
                                 />
 
                                 <div className='text-center'>
@@ -88,6 +150,8 @@ export default function Login({ status, }) {
                                         icon={<FiLogIn />}
                                         iconPosition='right'
                                         type='submit'
+                                        isLoading={processing}
+                                        disabled={processing}
                                     >
                                         Login
                                     </Button>
