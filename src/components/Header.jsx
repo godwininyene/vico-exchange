@@ -1,11 +1,16 @@
 import { FiMenu, FiBell, FiSearch, FiSun, FiMoon, FiUser, FiLogOut } from 'react-icons/fi';
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { logout } from '../utils/logout';
+import LoadingIndicator from './LoadingIndicator';
 
 const Header = ({ user, onMenuToggle }) => {
   const [darkMode, setDarkMode] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
+  const navigate = useNavigate();
+  const[processing, setProcessing] = useState(false)
 
   // Check if mobile view
   useEffect(() => {
@@ -37,11 +42,6 @@ const Header = ({ user, onMenuToggle }) => {
     
   }, []);
 
-  // Toggle dark mode
-//   const toggleDarkMode = () => {
-//     setDarkMode(!darkMode);
-//     document.documentElement.classList.toggle('dark');
-//   };
 
  const toggleDarkMode = () => {
     const newDarkMode = !darkMode;
@@ -57,11 +57,18 @@ const Header = ({ user, onMenuToggle }) => {
     }
   };
 
-  const handleLogout = () => {
-    // Add your logout logic here
-    console.log("Logging out...");
-    // navigate('/login');
-  };
+  
+ 
+  const handleLogout = async () => {
+    setProcessing(true);
+    try {
+      const res = await logout(navigate);
+        setProcessing(false);
+    }catch (err) {
+        setProcessing(false);
+      console.log(err);
+    }
+   };
 
   return (
     <header className={`fixed top-0 right-0 z-30 ${isMobile ? 'left-0' : 'left-64'} bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 transition-all duration-300`}>
@@ -111,19 +118,19 @@ const Header = ({ user, onMenuToggle }) => {
           {/* User profile dropdown */}
           <div className="relative">
             <button 
-              className="flex items-center space-x-2 focus:outline-none"
+              className="flex items-center space-x-2 focus:outline-none cursor-pointer"
               onClick={() => setProfileOpen(!profileOpen)}
             >
               <div className="h-8 w-8 rounded-full bg-gray-200 dark:bg-gray-600 flex items-center justify-center">
-                {user?.avatar ? (
-                  <img src={user.avatar} alt="Profile" className="h-full w-full rounded-full object-cover" />
+                {user?.photo ? (
+                  <img src={user.photo} alt={user.firstName} className="h-full w-full rounded-full object-cover" />
                 ) : (
                   <FiUser className="text-gray-600 dark:text-gray-300" />
                 )}
               </div>
               {!isMobile && (
                 <span className="text-sm font-medium text-gray-700 dark:text-white">
-                  {user?.name || 'User'}
+                  {user?.firstName || 'User'}
                 </span>
               )}
             </button>
@@ -132,11 +139,18 @@ const Header = ({ user, onMenuToggle }) => {
               <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg py-1 z-40">
                 <button
                   onClick={handleLogout}
-                  className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                  disabled={processing}
+                  className="cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
                 >
                   <div className="flex items-center">
-                    <FiLogOut className="mr-2" />
-                    Logout
+                    {processing ? (
+                        <LoadingIndicator size={5} />
+                      ) : (
+                        <>
+                          <FiLogOut className="mr-3" />
+                          <span>Logout</span>
+                        </>
+                    )}
                   </div>
                 </button>
               </div>

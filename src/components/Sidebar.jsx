@@ -1,4 +1,5 @@
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
+import LoadingIndicator from "./LoadingIndicator";
 import { 
   FiHome, FiShoppingCart, FiDollarSign, FiTrendingUp, 
   FiSettings, FiUsers, FiCreditCard, FiDatabase,
@@ -9,16 +10,23 @@ import { BsCoin } from "react-icons/bs";
 import { useState } from "react";
 import logo from './../assets/images/logo.png';
 import { FaUser } from "react-icons/fa";
+import { logout } from "../utils/logout";
 
 const Sidebar = ({ user, isOpen, onClose }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const [profileOpen, setProfileOpen] = useState(false);
+  const[processing, setProcessing] = useState(false)
 
-  const handleLogout = () => {
-    // Add your logout logic here
-    console.log("Logging out...");
-    navigate('/login');
+  const handleLogout = async () => {
+    setProcessing(true);
+    try {
+        const res = await logout(navigate);
+        setProcessing(false);
+      } catch (err) {
+        setProcessing(false);
+        console.log(err);
+    }
   };
 
   const user_links = [
@@ -95,20 +103,20 @@ const Sidebar = ({ user, isOpen, onClose }) => {
         <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
           <div className="relative">
             <button 
-              className="w-full flex items-center justify-between p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+              className="cursor-pointer w-full flex items-center justify-between p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
               onClick={() => setProfileOpen(!profileOpen)}
             >
               <div className="flex items-center">
                 <div className="flex-shrink-0">
                   <img
                     className="h-8 w-8 rounded-full"
-                    src={user?.avatar || 'https://via.placeholder.com/150'}
-                    alt="User"
+                    src={user?.photo || 'https://via.placeholder.com/150'}
+                    alt={user.firstName}
                   />
                 </div>
                 <div className="ml-3 text-left">
                   <p className="text-sm font-medium text-gray-700 dark:text-white">
-                    {user?.name || 'User Name'}
+                    {user?.firstName || 'User Name'}
                   </p>
                   <p className="text-xs font-medium text-gray-500 dark:text-gray-400">
                     {user?.role === 'admin' ? 'Administrator' : 'Standard User'}
@@ -123,10 +131,17 @@ const Sidebar = ({ user, isOpen, onClose }) => {
               <div className="absolute bottom-full left-0 right-0 mb-2 bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
                 <button
                   onClick={handleLogout}
-                  className="w-full flex items-center px-4 py-3 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                  disabled={processing}
+                  className="cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed  w-full flex items-center px-4 py-3 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                 >
-                  <FiLogOut className="mr-3" />
-                  Logout
+                  {processing ? (
+                      <LoadingIndicator size={5} />
+                    ) : (
+                      <>
+                        <FiLogOut className="mr-3" />
+                        <span>Logout</span>
+                      </>
+                  )}
                 </button>
               </div>
             )}
