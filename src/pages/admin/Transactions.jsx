@@ -11,7 +11,8 @@ import {
   FiEye,
   FiCheck,
   FiX,
-  FiDownload
+  FiDownload,
+  FiSearch
 } from 'react-icons/fi';
 import { BsCurrencyExchange } from 'react-icons/bs';
 
@@ -113,13 +114,14 @@ const Transactions = () => {
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
   const [transactionTypeFilter, setTransactionTypeFilter] = useState('all');
+  const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedTransaction, setSelectedTransaction] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [declineReason, setDeclineReason] = useState('');
   const transactionsPerPage = 4;
 
-  // Apply filters
+  // Apply filters and search
   useEffect(() => {
     let filtered = allTransactions;
     
@@ -135,9 +137,21 @@ const Transactions = () => {
       filtered = filtered.filter(t => t.transactionType === transactionTypeFilter);
     }
     
+    // Apply search filter
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter(t => 
+        t.id.toLowerCase().includes(query) ||
+        t.user.toLowerCase().includes(query) ||
+        t.userEmail.toLowerCase().includes(query) ||
+        t.description.toLowerCase().includes(query) ||
+        t.amount.toString().includes(query)
+      );
+    }
+    
     setTransactions(filtered);
     setCurrentPage(1);
-  }, [categoryFilter, statusFilter, transactionTypeFilter]);
+  }, [categoryFilter, statusFilter, transactionTypeFilter, searchQuery]);
 
   // Pagination logic
   const indexOfLastTransaction = currentPage * transactionsPerPage;
@@ -424,16 +438,15 @@ const Transactions = () => {
         </div>
       )}
 
-
-       {/* Header and Actions */}
-        <div className="bg-white dark:bg-gray-900 py-4 shadow-sm">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                <div>
-                    <h1 className="text-2xl font-bold text-gray-800 dark:text-white">Transaction Management</h1>
-                    <p className="text-gray-600 dark:text-gray-300">View and manage all transactions</p>
-                </div>
-            </div>
+      {/* Header and Actions */}
+      <div className="bg-white dark:bg-gray-900 py-4 shadow-sm">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-800 dark:text-white">Transaction Management</h1>
+            <p className="text-gray-600 dark:text-gray-300">View and manage all transactions</p>
+          </div>
         </div>
+      </div>
 
       {/* Filters */}
       <div className="mt-6 bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6">
@@ -442,57 +455,73 @@ const Transactions = () => {
             <FiFilter className="mr-2" /> Transaction Filters
           </h2>
           
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full sm:w-auto">
-            <div>
-              <label htmlFor="category" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Asset Type
-              </label>
-              <select
-                id="category"
-                value={categoryFilter}
-                onChange={(e) => setCategoryFilter(e.target.value)}
-                className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 focus:ring-2 focus:ring-primary-dark focus:border-transparent"
-              >
-                <option value="all">All Types</option>
-                <option value="giftcard">Gift Cards</option>
-                <option value="crypto">Cryptocurrency</option>
-                <option value="fiat">Fiat Transactions</option>
-              </select>
+          <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto items-center">
+            {/* Search Input - Fixed alignment */}
+            <div className="relative w-full sm:w-64 mt-5">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <FiSearch className="h-5 w-5 text-gray-400" />
+              </div>
+              <input
+                type="text"
+                placeholder="Search transactions..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="block w-full pl-10 pr-3 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 focus:ring-2 focus:ring-primary-dark focus:border-transparent"
+              />
             </div>
             
-            <div>
-              <label htmlFor="transactionType" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Transaction Type
-              </label>
-              <select
-                id="transactionType"
-                value={transactionTypeFilter}
-                onChange={(e) => setTransactionTypeFilter(e.target.value)}
-                className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 focus:ring-2 focus:ring-primary-dark focus:border-transparent"
-              >
-                <option value="all">All Types</option>
-                <option value="buy">Buy</option>
-                <option value="sell">Sell</option>
-                <option value="deposit">Deposit</option>
-                <option value="withdraw">Withdraw</option>
-              </select>
-            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full sm:w-auto">
+              <div>
+                <label htmlFor="category" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Asset Type
+                </label>
+                <select
+                  id="category"
+                  value={categoryFilter}
+                  onChange={(e) => setCategoryFilter(e.target.value)}
+                  className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 focus:ring-2 focus:ring-primary-dark focus:border-transparent"
+                >
+                  <option value="all">All Types</option>
+                  <option value="giftcard">Gift Cards</option>
+                  <option value="crypto">Cryptocurrency</option>
+                  <option value="fiat">Fiat Transactions</option>
+                </select>
+              </div>
+              
+              <div>
+                <label htmlFor="transactionType" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Transaction Type
+                </label>
+                <select
+                  id="transactionType"
+                  value={transactionTypeFilter}
+                  onChange={(e) => setTransactionTypeFilter(e.target.value)}
+                  className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 focus:ring-2 focus:ring-primary-dark focus:border-transparent"
+                >
+                  <option value="all">All Types</option>
+                  <option value="buy">Buy</option>
+                  <option value="sell">Sell</option>
+                  <option value="deposit">Deposit</option>
+                  <option value="withdraw">Withdraw</option>
+                </select>
+              </div>
 
-            <div>
-              <label htmlFor="status" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Status
-              </label>
-              <select
-                id="status"
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
-                className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 focus:ring-2 focus:ring-primary-dark focus:border-transparent"
-              >
-                <option value="all">All Statuses</option>
-                <option value="completed">Completed</option>
-                <option value="pending">Pending</option>
-                <option value="declined">Declined</option>
-              </select>
+              <div>
+                <label htmlFor="status" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Status
+                </label>
+                <select
+                  id="status"
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value)}
+                  className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 focus:ring-2 focus:ring-primary-dark focus:border-transparent"
+                >
+                  <option value="all">All Statuses</option>
+                  <option value="completed">Completed</option>
+                  <option value="pending">Pending</option>
+                  <option value="declined">Declined</option>
+                </select>
+              </div>
             </div>
           </div>
         </div>

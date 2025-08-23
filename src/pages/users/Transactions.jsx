@@ -10,6 +10,7 @@ import {
   FiChevronRight
 } from 'react-icons/fi';
 import { BsCurrencyExchange } from 'react-icons/bs';
+import axios from './../../lib/axios'
 
 const Transactions = () => {
   // Enhanced transaction data with buy/sell type
@@ -76,6 +77,17 @@ const Transactions = () => {
     },
   ];
 
+  const fetchTransactions = async()=>{
+    try{
+      const res = await axios.get('api/v1/transactions');
+      console.log(res.data.data.transactions);
+      
+
+    }catch(err){
+    
+    }
+  }
+
   // State for filters and pagination
   const [transactions, setTransactions] = useState(allTransactions);
   const [categoryFilter, setCategoryFilter] = useState('all');
@@ -102,6 +114,7 @@ const Transactions = () => {
     
     setTransactions(filtered);
     setCurrentPage(1); // Reset to first page when filters change
+    fetchTransactions()
   }, [categoryFilter, statusFilter, transactionTypeFilter]);
 
   // Pagination logic

@@ -1,10 +1,10 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { FiArrowLeft, FiUpload, FiCheckCircle, FiX, FiClock } from 'react-icons/fi';
 import { FaCheck } from 'react-icons/fa';
 
 // Mock crypto data
 const cryptocurrencies = [
-  { id: 1, name: 'Bitcoin', symbol: 'BTC', image: 'https://cryptologos.cc/logos/bitcoin-btc-logo.png', rate: 1500 },
+  { id: 1, name: 'Bitcoin', symbol: 'BTC', image: 'https://cryptologos.cc/logos/bitcoin-btc-logo.png', rate: 1700 },
   { id: 2, name: 'Ethereum', symbol: 'ETH', image: 'https://cryptologos.cc/logos/ethereum-eth-logo.png', rate: 3000000 },
   { id: 3, name: 'BNB', symbol: 'BNB', image: 'https://cryptologos.cc/logos/bnb-bnb-logo.png', rate: 40000 },
   { id: 4, name: 'Solana', symbol: 'SOL', image: 'https://cryptologos.cc/logos/solana-sol-logo.png', rate: 70000 },
@@ -24,13 +24,14 @@ const companyWallet = {
   btc: '3FZbgi29cpjq2GjdwV8eyHuJJnkLtktZc5',
   eth: '0x71C7656EC7ab88b098defB751B7401B5f6d8976F',
   bnb: 'bnb136ns6lfw4zs5hg4n85vdthaad7hq5m4gtkgf23',
-  sol: 'HN5XQ7K7XZKU5KXJ7XKXJ7XKXJ7XKXJ7XKXJ7XKXJ',
+  sol: 'HN5XQ7K7XZKU5KXJ7XKXJ7XKXJ7XKXJ7XKXJ',
   xrp: 'rEb8TK3gBgk5auZkwc6sHnwrGVJH8DuaLh',
   ada: 'Ae2tdPwUPEZ6RUCnjAHFfn97U2VgLKvqL3zT6KknDCH6qR7TajxJ8k3hF2'
 };
 
 const SellCrypto = () => {
   const [selectedCrypto, setSelectedCrypto] = useState(null);
+  const [selectedCoinRate, setSelectedCoinRate] = useState(null);
   const [amount, setAmount] = useState('');
   const [coinAmount, setCoinAmount] = useState('');
   const [stage, setStage] = useState('select'); // 'select', 'form', 'payment', 'confirmation'
@@ -40,6 +41,43 @@ const SellCrypto = () => {
   const fileInputRef = useRef(null);
   const [selectedAccount, setSelectedAccount] = useState('');
   const [walletAddress, setWalletAddress] = useState('');
+  const [loadingCryptoRate, setLoadingCryptoRate] = useState(false);
+
+  // Fetch crypto rate when a cryptocurrency is selected
+  useEffect(() => {
+    const fetchCryptoRate = async () => {
+      if (!selectedCrypto) return;
+      
+      setLoadingCryptoRate(true);
+      const id = selectedCrypto.name.toLowerCase();
+      
+      try {
+        const res = await fetch(
+          `https://api.coingecko.com/api/v3/simple/price?ids=${id}&vs_currencies=usd`
+        );
+
+        if (!res.ok) throw new Error('Failed to fetch from CoinGecko');
+
+        const data = await res.json();
+        if (!data || !data[id]) {
+          alert("No pricing data found for this cryptocurrency.");
+          return;
+        }
+
+        const priceInUSD = data[id].usd;
+        setSelectedCoinRate(priceInUSD);
+      } catch (err) {
+        console.error('Failed to fetch crypto price', err);
+        alert('Failed to fetch current cryptocurrency rate');
+        // Fallback to the mock rate if API fails
+        setSelectedCoinRate(selectedCrypto.rate);
+      } finally {
+        setLoadingCryptoRate(false);
+      }
+    };
+
+    fetchCryptoRate();
+  }, [selectedCrypto]);
 
   const calculateNairaAmount = () => {
     if (!amount || isNaN(amount) || !selectedCrypto) return 0;
@@ -47,9 +85,14 @@ const SellCrypto = () => {
   };
 
   const calculateCoinAmount = () => {
-    if (!amount || isNaN(amount) || !selectedCrypto) return 0;
-    return parseFloat(amount) / selectedCrypto.rate;
+    if (!amount || isNaN(amount) || !selectedCoinRate || selectedCoinRate === 0) return 0;
+    return parseFloat(amount) / selectedCoinRate;
   };
+
+  // Update coin amount when amount or rate changes
+  useEffect(() => {
+    setCoinAmount(calculateCoinAmount());
+  }, [amount, selectedCoinRate]);
 
   const handleCryptoSelect = (crypto) => {
     setSelectedCrypto(crypto);
@@ -61,7 +104,6 @@ const SellCrypto = () => {
   const handleAmountChange = (e) => {
     const value = e.target.value;
     setAmount(value);
-    setCoinAmount(calculateCoinAmount());
   };
 
   const handleSubmit = (e) => {
@@ -117,6 +159,7 @@ const SellCrypto = () => {
 
   const resetProcess = () => {
     setSelectedCrypto(null);
+    setSelectedCoinRate(null);
     setAmount('');
     setCoinAmount('');
     setStage('select');
@@ -230,7 +273,7 @@ const SellCrypto = () => {
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
                 <label htmlFor="amount" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Amount in Naira
+                  Amount in USDT
                 </label>
                 <div className="relative">
                   <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400">₦</span>
@@ -256,7 +299,7 @@ const SellCrypto = () => {
                   <input
                     type="text"
                     id="coinAmount"
-                    value={coinAmount}
+                    value={loadingCryptoRate ? "Loading..." : coinAmount.toFixed(8)}
                     disabled
                     className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-700"
                     placeholder="0.00"
@@ -290,7 +333,7 @@ const SellCrypto = () => {
               <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
                 <div className="flex justify-between mb-2">
                   <span className="text-gray-600 dark:text-gray-300">Rate:</span>
-                  <span className="font-medium text-gray-800 dark:text-white">₦{selectedCrypto.rate.toLocaleString()} per {selectedCrypto.symbol}</span>
+                   <span className="font-medium text-gray-800 dark:text-white">₦{selectedCrypto.rate.toLocaleString()} per {selectedCrypto.symbol}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600 dark:text-gray-300">You'll receive:</span>
@@ -303,9 +346,9 @@ const SellCrypto = () => {
               <button
                 type="submit"
                 className="w-full bg-primary-dark hover:bg-primary-light text-white font-medium py-3 px-6 rounded-lg transition-colors duration-300"
-                disabled={!amount || isNaN(amount) || !selectedAccount}
+                disabled={!amount || isNaN(amount) || !selectedAccount || loadingCryptoRate}
               >
-                Continue to Payment
+                {loadingCryptoRate ? 'Loading rates...' : 'Continue to Payment'}
               </button>
             </form>
           </div>
@@ -326,7 +369,7 @@ const SellCrypto = () => {
             <div className="space-y-6">
               <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 p-4 rounded-lg">
                 <p className="text-blue-800 dark:text-blue-200 font-medium">
-                  Please send exactly <span className="font-bold">{coinAmount} {selectedCrypto.symbol}</span> to the wallet below.
+                  Please send exactly <span className="font-bold">{coinAmount.toFixed(8)} {selectedCrypto.symbol}</span> to the wallet below.
                   Do not send more or less than this amount.
                 </p>
               </div>
@@ -347,7 +390,7 @@ const SellCrypto = () => {
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600 dark:text-gray-300">Amount to send:</span>
-                    <span className="font-medium text-gray-800 dark:text-white">{coinAmount} {selectedCrypto.symbol}</span>
+                    <span className="font-medium text-gray-800 dark:text-white">{coinAmount.toFixed(8)} {selectedCrypto.symbol}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600 dark:text-gray-300">Network:</span>
@@ -471,7 +514,7 @@ const SellCrypto = () => {
             </div>
             <h2 className="mt-4 text-2xl font-bold text-gray-800 dark:text-white">Transaction Received!</h2>
             <p className="mt-2 text-gray-600 dark:text-gray-300">
-              We've received your transaction of <span className="font-bold">{coinAmount} {selectedCrypto?.symbol}</span> and we're processing your payment.
+              We've received your transaction of <span className="font-bold">{coinAmount.toFixed(8)} {selectedCrypto?.symbol}</span> and we're processing your payment.
             </p>
 
             <div className="mt-8 bg-gray-50 dark:bg-gray-700 rounded-lg p-6 text-left">
@@ -483,7 +526,7 @@ const SellCrypto = () => {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600 dark:text-gray-300">Amount sent:</span>
-                  <span className="font-medium text-gray-800 dark:text-white">{coinAmount} {selectedCrypto?.symbol}</span>
+                  <span className="font-medium text-gray-800 dark:text-white">{coinAmount.toFixed(8)} {selectedCrypto?.symbol}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600 dark:text-gray-300">Amount to receive:</span>
