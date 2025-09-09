@@ -1,7 +1,7 @@
-import { NavLink, useLocation, useNavigate } from "react-router-dom";
+import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import LoadingIndicator from "./LoadingIndicator";
-import { 
-  FiHome, FiShoppingCart, FiDollarSign, FiTrendingUp, 
+import {
+  FiHome, FiShoppingCart, FiDollarSign, FiTrendingUp,
   FiSettings, FiUsers, FiCreditCard, FiDatabase,
   FiLogOut, FiX, FiChevronDown
 } from "react-icons/fi";
@@ -11,21 +11,23 @@ import { useState } from "react";
 import logo from './../assets/images/logo.png';
 import { FaUser } from "react-icons/fa";
 import { logout } from "../utils/logout";
+import { useSettings } from "../hooks/useSettings";
 
 const Sidebar = ({ user, isOpen, onClose }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const [profileOpen, setProfileOpen] = useState(false);
-  const[processing, setProcessing] = useState(false)
+  const [processing, setProcessing] = useState(false)
+    const { generalData } = useSettings();
 
   const handleLogout = async () => {
     setProcessing(true);
     try {
-        const res = await logout(navigate);
-        setProcessing(false);
-      } catch (err) {
-        setProcessing(false);
-        console.log(err);
+      const res = await logout(navigate);
+      setProcessing(false);
+    } catch (err) {
+      setProcessing(false);
+      console.log(err);
     }
   };
 
@@ -36,7 +38,7 @@ const Sidebar = ({ user, isOpen, onClose }) => {
     { name: "Buy Crypto", path: "/user/buy-crypto", icon: <FiTrendingUp size={18} /> },
     { name: "Sell Crypto", path: "/user/sell-crypto", icon: <RiExchangeFill size={18} /> },
     { name: "Transactions", path: "/user/transactions", icon: <FiCreditCard size={18} /> },
-    {name:"Profile", path:"/user/profile" , icon: <FaUser size={18} />}
+    { name: "Profile", path: "/user/profile", icon: <FaUser size={18} /> }
   ];
 
   const admin_links = [
@@ -54,20 +56,21 @@ const Sidebar = ({ user, isOpen, onClose }) => {
     <>
       {/* Sidebar */}
       <aside
-        className={`fixed inset-y-0 left-0 z-40 w-64 border-r border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 transition-all duration-300 ease-in-out ${
-          isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
-        }`}
+        className={`fixed inset-y-0 left-0 z-40 w-64 border-r border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 transition-all duration-300 ease-in-out ${isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
+          }`}
       >
         {/* Logo and Close Button */}
         <div className="flex items-center justify-between h-16 border-b border-gray-200 dark:border-gray-700 px-4">
-          <div className="flex">
-                <img 
-                    src={logo} 
-                    alt="Logo" 
-                    className="h-8" 
-                />
-                <h1 className="font-bold ml-2 text-lg text-gray-500 l dark:text-gray-400">Vico Exchange</h1>
-            </div>
+
+          <Link className="flex" to='/'>
+            <img
+              src={logo}
+              alt="Logo"
+              className="h-8"
+            />
+            <h1 className="font-bold ml-2 text-lg text-gray-500 l dark:text-gray-400">{generalData.platformName}</h1>
+          </Link>
+
           <button
             onClick={onClose}
             className="lg:hidden text-gray-500 l dark:text-gray-400 hover:text-gray-700 dark:hover:text-white"
@@ -84,7 +87,7 @@ const Sidebar = ({ user, isOpen, onClose }) => {
               to={link.path}
               className={({ isActive }) => `
                 flex items-center px-4 py-3 rounded-lg transition-colors duration-200
-                ${isActive 
+                ${isActive
                   ? 'bg-primary-dark/10 text-primary-dark dark:bg-gray-700 dark:text-white font-medium'
                   : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700'
                 }
@@ -102,7 +105,7 @@ const Sidebar = ({ user, isOpen, onClose }) => {
         {/* User Profile with Dropdown */}
         <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
           <div className="relative">
-            <button 
+            <button
               className="cursor-pointer w-full flex items-center justify-between p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
               onClick={() => setProfileOpen(!profileOpen)}
             >
@@ -135,12 +138,12 @@ const Sidebar = ({ user, isOpen, onClose }) => {
                   className="cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed  w-full flex items-center px-4 py-3 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                 >
                   {processing ? (
-                      <LoadingIndicator size={5} />
-                    ) : (
-                      <>
-                        <FiLogOut className="mr-3" />
-                        <span>Logout</span>
-                      </>
+                    <LoadingIndicator size={5} />
+                  ) : (
+                    <>
+                      <FiLogOut className="mr-3" />
+                      <span>Logout</span>
+                    </>
                   )}
                 </button>
               </div>
@@ -151,7 +154,7 @@ const Sidebar = ({ user, isOpen, onClose }) => {
 
       {/* Overlay for mobile */}
       {isOpen && (
-        <div 
+        <div
           className="fixed inset-0 z-30 bg-black/50 md:hidden"
           onClick={onClose}
         />

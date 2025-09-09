@@ -16,6 +16,8 @@ import AuthenticatedLayout from './layouts/AuthenticatedLayout'
 //Authentication Pages
 import Login from './pages/auth/Login'
 import Register from './pages/auth/Register'
+import ForgotPassword from './pages/auth/ForgotPassword'
+import PasswordReset from './pages/auth/PasswordReset'
 
 //Others
 import NotFound from './pages/NotFound';
@@ -40,6 +42,7 @@ import Coins from './pages/admin/Coins'
 import AdminSettings from './pages/admin/Settings'
 
 
+
 function App() {
 
   const router = createBrowserRouter(createRoutesFromElements(
@@ -56,6 +59,8 @@ function App() {
       <Route path='/' element={<GuestLayout />}>
         <Route path='signup' element={<Register />} />
         <Route path='login' element={<Login />} />
+        <Route path='/forgot-password' element={<ForgotPassword />} />
+        <Route path='/password-reset' element={<PasswordReset />} />
       </Route>
 
 

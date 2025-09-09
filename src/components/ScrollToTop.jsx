@@ -1,11 +1,21 @@
-import { useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
 
-const ScrollToTop = () => {
+const ScrollToTop = ({ scrollRef }) => {
   const { pathname } = useLocation();
+
   useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [pathname]);
+    const scrollEl = scrollRef?.current || window;
+
+    // wait until after paint
+    requestAnimationFrame(() => {
+      scrollEl.scrollTo({
+        top: 0,
+        left: 0,
+        behavior: "smooth",
+      });
+    });
+  }, [pathname, scrollRef]);
 
   return null;
 };

@@ -1,14 +1,51 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import InputField from '../../components/InputField';
 import logo from './../../assets/images/logo.png'
 import bg from './../../assets/images/about-03.jpg';
 import { Link } from 'react-router-dom';
 import Button from '../../components/Button';
 import { FiLogIn } from "react-icons/fi";
+import axios from '../../lib/axios';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
-export default function Register({ status }) {
-    const handleSubmit = (e) => {
+export default function Register() {
+    const [processing, setProcessing] = useState(false);
+    const [errors, setErrors] = useState({})
+    const navigate = useNavigate()
+    const handleSubmit = async (e) => {
         e.preventDefault();
+        setProcessing(true)
+        setErrors({})
+        try {
+            const formData = new FormData(e.target);
+            const dataToSend = Object.fromEntries(formData);
+            const res = await axios.post('api/v1/users/signup', dataToSend);
+            if (res.data.status === 'success') {
+                toast.success('Account created successfully! You will be redirected shortly');
+                localStorage.setItem("user", JSON.stringify(res.data.data.user));
+                e.target.reset()
+                setTimeout(() => {
+                    navigate('/user/dashboard')
+                }, 3000)
+
+            }
+        } catch (err) {
+            // Extract errors from the backend response
+            if (err.response?.data?.errors) {
+                setErrors(err.response.data.errors);
+            } else {
+                // For unexpected errors, set a generic error
+                setErrors({ general: 'An unexpected error occurred' });
+                console.log('Unexpected Error:', err);
+            }
+            toast.error(err.response?.data?.message || 'Error creating account');
+            console.log(err);
+
+        } finally {
+            setProcessing(false)
+        }
+
     };
 
     // Prevent scrolling on desktop
@@ -24,9 +61,9 @@ export default function Register({ status }) {
     return (
         <>
             {/* Left hand content Start */}
-            <div 
-                className="hidden md:block bg-cover bg-center h-screen fixed left-0 top-0 w-1/2"  
-                style={{backgroundImage: `url(${bg})`}}
+            <div
+                className="hidden md:block bg-cover bg-center h-screen fixed left-0 top-0 w-1/2"
+                style={{ backgroundImage: `url(${bg})` }}
             >
                 <div className="h-full bg-gradient-to-b from-[#000000ec] via-[#000000b9] to-[#000000b9] bg-opacity-20 text-primary">
                     <div className='h-full flex flex-col justify-center'>
@@ -37,7 +74,7 @@ export default function Register({ status }) {
                                     VICO EXCHANGE
                                 </span>
                             </Link>
-                            
+
                             <h1 className='text-white text-3xl font-black pt-5'>
                                 Sell Gift Cards & Crypto with ease
                             </h1>
@@ -66,45 +103,65 @@ export default function Register({ status }) {
                             <p className='text-sm font-medium leading-[1.6] mb-8 dark:text-white'>
                                 Enter your personal details to create account.
                             </p>
-                            {status && <div className="mb-7 font-medium text-sm text-green-600">{status}</div>}
-                            
+                            {errors.general && <div className="mb-7 font-medium text-sm text-green-600">{errors.general}</div>}
+
                             <form onSubmit={handleSubmit}>
                                 <InputField
-                                    label='Name'
-                                    placeholder="Enter your name"
-                                    classNames='mb-4'
+                                    label='firstName'
+                                    placeholder="Enter your firstname"
+                                    name={'firstName'}
+                                    error={errors.firstName}
+                                />
+
+                                <InputField
+                                    label='Lastname'
+                                    name={'lastName'}
+                                    placeholder="Enter your lastname"
+                                    error={errors.lastName}
                                 />
                                 <InputField
                                     type='email'
                                     label='Email'
+                                    name={'email'}
                                     placeholder="Enter your email"
-                                    classNames='mb-4'
+                                    error={errors.email}
+                                />
+
+                                <InputField
+                                    label='Phone'
+                                    name={'phone'}
+                                    placeholder="Enter your phone number"
+                                    error={errors.phone}
                                 />
                                 <InputField
                                     type='password'
+                                    name={'password'}
                                     label='Password'
                                     placeholder="Enter your password"
-                                    classNames='mb-4'
+                                    error={errors.password}
                                 />
                                 <InputField
                                     type='password'
+                                    name={'passwordConfirm'}
                                     label='Confirm Password'
                                     placeholder="Enter your password"
-                                    classNames='mb-4'
+                                    error={errors.passwordConfirm}
                                 />
 
                                 <div className='text-center'>
-                                    <Button 
+                                    <Button
                                         className='w-full'
                                         icon={<FiLogIn />}
                                         iconPosition='right'
                                         type='submit'
+                                        isLoading={processing}
+                                        disabled={processing}
                                     >
                                         Create Account
                                     </Button>
                                 </div>
 
-                                <p className='text-sm mt-4 text-center'>
+                                <p className='text-sm mt-4 text-center dark:text-slate-300'>
                                     Already have an account?{' '}
                                     <Link to='/login' className='text-blue-600 dark:text-blue-400'>
                                         Login here

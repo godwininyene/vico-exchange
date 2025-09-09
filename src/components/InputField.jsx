@@ -17,16 +17,17 @@ const InputField = ({
   accept,
 }) => {
   const baseStyles =
-    "w-full py-2 px-4 transition-all duration-200 focus:outline-none";
+    "w-full py-2 px-4 transition-all duration-200 focus:outline-none dark:text-gray-100";
 
   const variants = {
     default:
-      "border-1 border-solid border-[#D9E1EC] rounded-lg placeholder-[#A1A7C4] text-black focus:border-primary-light",
-    outline: "border-b-2 border-gray-300 bg-transparent focus:border-blue-500",
+      "border-1 border-solid border-[#D9E1EC] rounded-lg placeholder-[#A1A7C4] text-gray-900 dark:bg-gray-700 dark:border-gray-600 focus:border-primary-light",
+    outline: 
+      "border-b-2 border-gray-300 bg-transparent dark:bg-transparent focus:border-blue-500 dark:border-gray-600",
     filled:
-      "bg-gray-100 rounded-lg focus:bg-white focus:ring-2 focus:ring-blue-500",
+      "bg-gray-100 rounded-lg focus:bg-white focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:focus:bg-gray-700",
     floating:
-      "border border-gray-300 rounded-lg peer focus:ring-2 focus:ring-blue-500 focus:border-blue-500",
+      "border border-gray-300 rounded-lg peer focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600",
   };
 
   const inputClasses = `${baseStyles} ${
@@ -51,18 +52,18 @@ const InputField = ({
   };
 
   return (
-    <div className="relative">
+    <div className="relative mb-3">
       {label && (
-        <label htmlFor={name} className="block text-md text-[#5A607F] mb-1">
+        <label htmlFor={name} className="block text-md text-[#5A607F] dark:text-gray-300 mb-1">
           {label}
           {isRequired && <span className="text-red-500">*</span>}
         </label>
       )}
       <div className="relative">
         <InputComponent {...inputProps} />
-        {icon && <div className="absolute right-3 top-3.5 text-gray-400">{icon}</div>}
+        {icon && <div className="absolute right-3 top-3.5 text-gray-400 dark:text-gray-300">{icon}</div>}
       </div>
-      {error && <p className="mt-1 text-sm text-red-500">{error}</p>}
+      {error && <p className="mt-1 text-sm text-red-500 dark:text-red-400">{error}</p>}
     </div>
   );
 };

@@ -1,13 +1,14 @@
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Outlet } from "react-router-dom";
 import ScrollToTop from "../components/ScrollToTop";
 
 const AuthenticatedLayout = ({ children }) => {
-   const user = JSON.parse(localStorage.getItem('user'));
+  const user = JSON.parse(localStorage.getItem('user'));
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const mainRef = useRef(null);
 
   // Check if mobile view on mount and resize
   useEffect(() => {
@@ -25,7 +26,7 @@ const AuthenticatedLayout = ({ children }) => {
   //   const user = JSON.parse(localStorage.getItem('user'));
   return (
     <div className="flex h-screen bg-gray-100 dark:bg-gray-900 overflow-hidden">
-      <ScrollToTop />
+      <ScrollToTop scrollRef={mainRef}/>
       
       {/* Sidebar */}
       <Sidebar 

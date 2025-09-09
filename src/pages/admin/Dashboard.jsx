@@ -1,415 +1,570 @@
-import { FiUsers, FiDollarSign, FiCreditCard, FiActivity, FiTrendingUp, FiPackage, FiShield, FiSettings, FiCheck, FiClock, FiX } from 'react-icons/fi';
-import { BsCurrencyExchange, BsGraphUp } from 'react-icons/bs';
-import { RiExchangeLine } from 'react-icons/ri';
-import Chart from 'react-apexcharts';
+import {
+  FiUsers,
+  FiCreditCard,
+  FiActivity,
+  FiShield,
+  FiSettings,
+} from "react-icons/fi";
+import { BsCurrencyExchange } from "react-icons/bs";
+import { RiExchangeLine } from "react-icons/ri";
+import Chart from "react-apexcharts";
+import PageHeader from "../../components/PageHeader";
+import StatCard from "../../components/StatCard";
+import AdminQuickAction from "../../components/AdminQuickAction";
+import Transaction from "../../components/Transaction";
+import PendingActionCard from "../../components/PendingActionCard";
+import ChartContainer from "../../components/ChartContainer";
+import MetricsHeader from "../../components/MetricsHeader";
+import SectionContainer from "../../components/SectionContainer";
+import { useState, useEffect } from "react";
+import axios from "./../../lib/axios";
+import { toast } from "react-toastify";
+import { Link } from "react-router-dom";
 
 const Dashboard = () => {
-  // Mock data - replace with actual data from your backend
-  const stats = [
-    { title: "Total Users", value: "1,248", change: "+12.5%", icon: <FiUsers size={24} /> },
-    { title: "Total Transactions", value: "₦48,750,320", change: "+8.2%", icon: <FiActivity size={24} /> },
-    { title: "Gift Card Volume", value: "₦12,450,500", change: "+5.7%", icon: <FiCreditCard size={24} /> },
-    { title: "Crypto Volume", value: "₦36,299,820", change: "+14.3%", icon: <BsCurrencyExchange size={24} /> },
-  ];
+  // State for stats data
+  const [stats, setStats] = useState([
+    {
+      title: "Total Users",
+      value: "0",
+      change: "0%",
+      icon: <FiUsers size={24} />,
+    },
+    {
+      title: "Total Transactions",
+      value: "₦0",
+      change: "0%",
+      icon: <FiActivity size={24} />,
+    },
+    {
+      title: "Gift Card Volume",
+      value: "₦0",
+      change: "0%",
+      icon: <FiCreditCard size={24} />,
+    },
+    {
+      title: "Crypto Volume",
+      value: "₦0",
+      change: "0%",
+      icon: <BsCurrencyExchange size={24} />,
+    },
+  ]);
 
-  const recentActivities = [
-    { id: 1, user: "John Doe", action: "Sold Amazon Gift Card", amount: "₦24,000", time: "2 mins ago", status: "completed" },
-    { id: 2, user: "Jane Smith", action: "BTC Purchase", amount: "₦450,000", time: "15 mins ago", status: "pending" },
-    { id: 3, user: "Mike Johnson", action: "ETH Sale", amount: "₦320,500", time: "32 mins ago", status: "completed" },
-    { id: 4, user: "Sarah Williams", action: "Added Bank Account", amount: "", time: "1 hour ago", status: "completed" },
-    { id: 5, user: "David Brown", action: "Google Play Gift Card", amount: "₦15,750", time: "2 hours ago", status: "failed" },
-  ];
-
-  const pendingActions = [
-    { id: 1, type: "Gift Card", user: "Jane Smith", amount: "₦24,000", time: "15 mins ago" },
-    { id: 2, type: "Withdrawal", user: "Robert Taylor", amount: "₦150,000", time: "42 mins ago" },
-    { id: 3, type: "KYC Verification", user: "Emily Davis", amount: "", time: "1 hour ago" },
-  ];
-
-  // Chart data for transaction volume
-  const transactionVolumeOptions = {
-    chart: {
-      type: 'area',
-      height: 350,
-      toolbar: {
-        show: false
+  // Chart states
+  const [transactionVolumeData, setTransactionVolumeData] = useState({
+    options: {
+      chart: {
+        type: "area",
+        height: 350,
+        toolbar: { show: false },
+        zoom: { enabled: false },
       },
-      zoom: {
-        enabled: false
-      }
-    },
-    dataLabels: {
-      enabled: false
-    },
-    stroke: {
-      curve: 'smooth',
-      width: 2
-    },
-    colors: ['#4F46E5'], // Using primary color
-    fill: {
-      type: 'gradient',
-      gradient: {
-        shadeIntensity: 1,
-        opacityFrom: 0.7,
-        opacityTo: 0.3,
-        stops: [0, 90, 100]
-      }
-    },
-    xaxis: {
-      categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-      axisBorder: {
-        show: false
-      },
-      axisTicks: {
-        show: false
-      },
-      labels: {
-        style: {
-          colors: '#6B7280',
-          fontSize: '12px'
-        }
-      }
-    },
-    yaxis: {
-      labels: {
-        style: {
-          colors: '#6B7280',
-          fontSize: '12px'
+      dataLabels: { enabled: false },
+      stroke: { curve: "smooth", width: 2 },
+      colors: ["#4F46E5"],
+      fill: {
+        type: "gradient",
+        gradient: {
+          shadeIntensity: 1,
+          opacityFrom: 0.7,
+          opacityTo: 0.3,
+          stops: [0, 90, 100],
         },
-        formatter: (value) => { return `₦${(value / 1000).toFixed(0)}k` }
-      }
-    },
-    grid: {
-      borderColor: '#F3F4F6',
-      strokeDashArray: 4,
+      },
+      xaxis: {
+        categories: [],
+        axisBorder: { show: false },
+        axisTicks: { show: false },
+        labels: {
+          style: { colors: "#6B7280", fontSize: "12px" },
+        },
+      },
       yaxis: {
-        lines: {
-          show: true
-        }
-      }
+        labels: {
+          style: { colors: "#6B7280", fontSize: "12px" },
+          formatter: (value) => `₦${(value / 1000).toFixed(0)}k`,
+        },
+      },
+      grid: {
+        borderColor: "#F3F4F6",
+        strokeDashArray: 4,
+        yaxis: { lines: { show: true } },
+      },
+      tooltip: {
+        y: { formatter: (value) => `₦${value.toLocaleString()}` },
+      },
     },
-    tooltip: {
-      y: {
-        formatter: (value) => { return `₦${value.toLocaleString()}` }
-      }
-    }
-  };
+    series: [{ name: "Transaction Volume", data: [] }],
+  });
 
-  const transactionVolumeSeries = [{
-    name: 'Transaction Volume',
-    data: [1500000, 1800000, 2100000, 1750000, 2200000, 2500000, 2800000, 3000000, 2700000, 3200000, 3500000, 4000000]
-  }];
-
-  // Chart data for user growth
-  const userGrowthOptions = {
-    chart: {
-      type: 'line',
-      height: 350,
-      toolbar: {
-        show: false
+  const [userGrowthData, setUserGrowthData] = useState({
+    options: {
+      chart: {
+        type: "line",
+        height: 350,
+        toolbar: { show: false },
+        zoom: { enabled: false },
       },
-      zoom: {
-        enabled: false
-      }
-    },
-    dataLabels: {
-      enabled: false
-    },
-    stroke: {
-      curve: 'smooth',
-      width: 2
-    },
-    colors: ['#10B981'], // Using success color
-    markers: {
-      size: 5,
-      hover: {
-        size: 7
-      }
-    },
-    xaxis: {
-      categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-      axisBorder: {
-        show: false
+      dataLabels: { enabled: false },
+      stroke: { curve: "smooth", width: 2 },
+      colors: ["#10B981"],
+      markers: { size: 5, hover: { size: 7 } },
+      xaxis: {
+        categories: [],
+        axisBorder: { show: false },
+        axisTicks: { show: false },
+        labels: {
+          style: { colors: "#6B7280", fontSize: "12px" },
+        },
       },
-      axisTicks: {
-        show: false
-      },
-      labels: {
-        style: {
-          colors: '#6B7280',
-          fontSize: '12px'
-        }
-      }
-    },
-    yaxis: {
-      labels: {
-        style: {
-          colors: '#6B7280',
-          fontSize: '12px'
-        }
-      }
-    },
-    grid: {
-      borderColor: '#F3F4F6',
-      strokeDashArray: 4,
       yaxis: {
-        lines: {
-          show: true
-        }
-      }
-    }
-  };
-
-  const userGrowthSeries = [{
-    name: 'New Users',
-    data: [120, 150, 180, 200, 220, 250, 280, 300, 280, 320, 350, 400]
-  }];
-
-  // Chart data for transaction types
-  const transactionTypeOptions = {
-    chart: {
-      type: 'donut',
-      height: 350
+        labels: {
+          style: { colors: "#6B7280", fontSize: "12px" },
+        },
+      },
+      grid: {
+        borderColor: "#F3F4F6",
+        strokeDashArray: 4,
+        yaxis: { lines: { show: true } },
+      },
     },
-    labels: ['Gift Cards', 'Crypto Purchases', 'Crypto Sales', 'Withdrawals'],
-    colors: ['#4F46E5', '#10B981', '#F59E0B', '#EF4444'],
-    legend: {
-      position: 'bottom'
-    },
-    plotOptions: {
-    
-      pie: {
-        donut: {
-          size: '65%',
-          labels: {
-            show: true,
-            total: {
+    series: [{ name: "New Users", data: [] }],
+  });
+
+  const [transactionTypeData, setTransactionTypeData] = useState({
+    options: {
+      chart: {
+        type: "donut",
+        height: 350,
+        foreColor: "#fff",
+      },
+      labels: [],
+      colors: [
+        "#4F46E5",
+        "#10B981",
+        "#F59E0B",
+        "#EF4444",
+        "#8B5CF6",
+        "#EC4899",
+      ],
+      legend: {
+        position: "bottom",
+        labels: {
+          colors: "#6B7280",
+        },
+      },
+      plotOptions: {
+        pie: {
+          donut: {
+            size: "65%",
+            labels: {
               show: true,
-              label: 'Total Transactions',
-              formatter: () => '₦48.7M'
-            }
-          }
-        }
-      }
-    },
-    dataLabels: {
-      enabled: false
-    },
-    responsive: [{
-      breakpoint: 480,
-      options: {
-        chart: {
-          width: 200
+              total: {
+                show: true,
+                label: "Total Transactions",
+                formatter: () => "₦0",
+                color: "#6B7280",
+              },
+              value: {
+                color: "#6B7280",
+                fontSize: "16px",
+                fontWeight: "bold",
+              },
+            },
+          },
         },
-        legend: {
-          position: 'bottom'
-        }
+      },
+      dataLabels: {
+        enabled: false,
+      },
+      responsive: [
+        {
+          breakpoint: 480,
+          options: {
+            chart: { width: 200 },
+            legend: { position: "bottom" },
+          },
+        },
+      ],
+    },
+    series: [],
+  });
+
+  const [activePeriod, setActivePeriod] = useState("Monthly");
+  const [recentTransactions, setRecentTransactions] = useState([]);
+  const [pendingTransactions, setPendingTransactions] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [chartLoading, setChartLoading] = useState(false);
+  const [fetched, setFetched] = useState(false);
+  const periods = ["Daily", "Weekly", "Monthly"];
+
+  const fetchRecentTransactions = async () => {
+    try {
+      const res = await axios.get("api/v1/transactions/recent");
+      if (res.data.status === "success") {
+        setRecentTransactions(res.data.data.transactions);
       }
-    }]
+    } catch (err) {
+      console.log(err);
+    }
   };
 
-  const transactionTypeSeries = [12450, 18300, 12500, 5500];
+  const fetchPendingTransactions = async () => {
+    try {
+      const res = await axios.get("api/v1/transactions/pending");
+      if (res.data.status === "success") {
+        setPendingTransactions(res.data.data.transactions);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  const fetchStats = async () => {
+    setLoading(true);
+    try {
+      const res = await axios.get("api/v1/stats/admin");
+      if (res.data.status === "success") {
+        const backendStats = res.data.data.stats;
+
+        const formattedStats = backendStats.map((stat) => {
+          let icon;
+          switch (stat.title) {
+            case "Total Users":
+              icon = <FiUsers size={24} />;
+              break;
+            case "Total Transactions":
+              icon = <FiActivity size={24} />;
+              break;
+            case "Gift Card Volume":
+              icon = <FiCreditCard size={24} />;
+              break;
+            case "Crypto Volume":
+              icon = <BsCurrencyExchange size={24} />;
+              break;
+            default:
+              icon = <FiActivity size={24} />;
+          }
+
+          return {
+            title: stat.title,
+            total:stat.total,
+            currentValue: stat.currentValue,
+            preValue:stat.preValue,
+            change: stat.change,
+            icon: icon
+          };
+        });
+
+        setStats(formattedStats);
+        setFetched(true);
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error("Failed to fetch dashboard statistics");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Fetch chart data
+  const fetchChartData = async (period = "monthly") => {
+    setChartLoading(true);
+    try {
+      const res = await axios.get(`api/v1/stats/admin/charts?period=${period}`);
+
+      if (res.data.status === "success") {
+        const data = res.data.data;
+
+        // Transform transaction volume data
+        const volumeSeries = [
+          {
+            name: "Transaction Volume",
+            data: data.transactionVolume.map(
+              (item) => parseInt(item.totalAmount) || 0
+            ),
+          },
+        ];
+
+        const volumeCategories = data.transactionVolume.map((item) => {
+          const date = new Date(item.date);
+          return date.toLocaleDateString("en-US", {
+            day: "numeric",
+            month: "short",
+          });
+        });
+
+        // Transform user growth data
+        const growthSeries = [
+          {
+            name: "New Users",
+            data: data.userGrowth.map((item) => parseInt(item.newUsers) || 0),
+          },
+        ];
+
+        const growthCategories = data.userGrowth.map((item) => {
+          const date = new Date(item.date);
+          return date.toLocaleDateString("en-US", {
+            day: "numeric",
+            month: "short",
+          });
+        });
+
+        // Transform transaction type data
+        const typeSeries = data.transactionTypes.map(
+          (item) => parseInt(item.count) || 0
+        );
+        const typeLabels = data.transactionTypes.map(
+          (item) => `${item.assetType} ${item.transactionType}`
+        );
+
+        // Calculate total for donut chart
+        const totalTransactions = data.transactionTypes.reduce(
+          (sum, item) => sum + (parseInt(item.count) || 0),
+          0
+        );
+
+        // Update transaction volume chart
+        setTransactionVolumeData({
+          options: {
+            ...transactionVolumeData.options,
+            xaxis: {
+              ...transactionVolumeData.options.xaxis,
+              categories: volumeCategories,
+            },
+          },
+          series: volumeSeries,
+        });
+
+        // Update user growth chart
+        setUserGrowthData({
+          options: {
+            ...userGrowthData.options,
+            xaxis: {
+              ...userGrowthData.options.xaxis,
+              categories: growthCategories,
+            },
+          },
+          series: growthSeries,
+        });
+
+        // Update transaction types chart
+        setTransactionTypeData({
+          options: {
+            ...transactionTypeData.options,
+            labels: typeLabels,
+            plotOptions: {
+              pie: {
+                donut: {
+                  size: "65%",
+                  labels: {
+                    show: true,
+                    total: {
+                      show: true,
+                      label: "Total Transactions",
+                      formatter: () => `${totalTransactions}`,
+                      color: "#6B7280",
+                    },
+                    value: {
+                      color: "#6B7280",
+                      fontSize: "16px",
+                      fontWeight: "bold",
+                    },
+                  },
+                },
+              },
+            },
+          },
+          series: typeSeries,
+        });
+      }
+    } catch (error) {
+      console.error("Error fetching chart data:", error);
+      toast.error("Failed to fetch chart data");
+    } finally {
+      setChartLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchRecentTransactions();
+    fetchPendingTransactions();
+    fetchStats();
+    fetchChartData("monthly");
+  }, []);
+
+  const handlePeriodChange = (period) => {
+    setActivePeriod(period);
+    const backendPeriod = period.toLowerCase();
+    fetchChartData(backendPeriod);
+  };
+
+  const handleReviewAction = (action) => {
+    console.log("Review action:", action);
+  };
 
   return (
     <div className="pb-10">
       {/* Header */}
-      <div className="bg-white dark:bg-gray-900  py-4 shadow-sm">
-        <h1 className="text-2xl font-bold text-gray-800 dark:text-white">Admin Dashboard</h1>
-        <p className="text-gray-600 dark:text-gray-300">Overview of platform activities and metrics</p>
-      </div>
+      <PageHeader
+        primaryHeader={"Admin Dashboard"}
+        secondaryHeader={"Overview of platform activities and metrics"}
+      />
 
       {/* Stats Cards */}
-      <div className="container mx-auto  mt-6">
+      <div className="container mx-auto mt-6">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {stats.map((stat, index) => (
-            <div 
-              key={index}
-              className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow duration-300"
-            >
-              <div className="flex justify-between">
-                <div>
-                  <p className="text-gray-500 dark:text-gray-400 text-sm">{stat.title}</p>
-                  <h3 className="text-xl font-bold text-gray-800 dark:text-white mt-1">{stat.value}</h3>
-                </div>
-                <div className="bg-primary-dark/10 text-primary-dark dark:bg-primary-light/10 dark:text-primary-light rounded-full p-3">
-                  {stat.icon}
-                </div>
-              </div>
-              <p className={`mt-3 text-sm ${stat.change.startsWith('+') ? 'text-green-500' : 'text-red-500'}`}>
-                {stat.change}
-              </p>
-            </div>
+            <StatCard stat={stat} key={index} loading={loading && !fetched} />
           ))}
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="container mx-auto  mt-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="container mx-auto mt-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Recent Activities */}
         <div className="lg:col-span-2">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm overflow-hidden">
-            <div className="p-6 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
-              <h2 className="text-xl font-bold text-gray-800 dark:text-white">Recent Activities</h2>
-              <button className="text-sm text-primary-dark dark:text-primary-light hover:underline">
+          <SectionContainer
+            title="Recent Activities"
+            actionButton={
+              <Link
+                to="/admin/transactions"
+                className="text-sm text-primary-dark dark:text-primary-light hover:underline"
+              >
                 View All
-              </button>
-            </div>
-            
+              </Link>
+            }
+          >
             <div className="divide-y divide-gray-200 dark:divide-gray-700">
-              {recentActivities.map((activity) => (
-                <div key={activity.id} className="p-4 hover:bg-gray-50 dark:hover:bg-gray-900 transition-colors">
-                  <div className="flex justify-between items-center">
-                    <div className="flex items-center">
-                      <div className={`p-2 rounded-full ${
-                        activity.status === 'completed' 
-                          ? 'bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400'
-                          : activity.status === 'pending'
-                          ? 'bg-yellow-100 text-yellow-600 dark:bg-yellow-900/30 dark:text-yellow-400'
-                          : 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400'
-                      }`}>
-                        {activity.status === 'completed' ? (
-                          <FiCheck size={16} />
-                        ) : activity.status === 'pending' ? (
-                          <FiClock size={16} />
-                        ) : (
-                          <FiX size={16} />
-                        )}
-                      </div>
-                      <div className="ml-4">
-                        <h3 className="font-medium text-gray-800 dark:text-white">{activity.user}</h3>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">{activity.action}</p>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      {activity.amount && (
-                        <p className="font-medium text-gray-800 dark:text-white">{activity.amount}</p>
-                      )}
-                      <p className="text-xs text-gray-500 dark:text-gray-400">{activity.time}</p>
-                    </div>
-                  </div>
-                </div>
+              {recentTransactions.map((transaction) => (
+                <Transaction
+                  key={transaction.id}
+                  transaction={transaction}
+                  variant="dashboard"
+                  context="admin"
+                />
               ))}
             </div>
+          </SectionContainer>
+
+          {/* Quick Admin Actions */}
+          <div className="mt-8">
+            <SectionContainer title="Quick Actions">
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 p-6">
+                <AdminQuickAction
+                  Icon={FiUsers}
+                  label="Manage Users"
+                  url="/admin/users"
+                  color="blue"
+                />
+                <AdminQuickAction
+                  Icon={FiCreditCard}
+                  label="Gift Cards"
+                  url="/admin/giftcards"
+                  color="green"
+                />
+                <AdminQuickAction
+                  Icon={BsCurrencyExchange}
+                  label="Crypto"
+                  url="/admin/coins"
+                  color="purple"
+                />
+                <AdminQuickAction
+                  Icon={RiExchangeLine}
+                  label="Transactions"
+                  url="/admin/transactions"
+                  color="yellow"
+                />
+                {/* <AdminQuickAction
+                  Icon={FiShield}
+                  label="Security"
+                  url="/admin/security"
+                  color="red"
+                /> */}
+                <AdminQuickAction
+                  Icon={FiSettings}
+                  label="Settings"
+                  url="/admin/settings"
+                  color="gray"
+                />
+              </div>
+            </SectionContainer>
           </div>
         </div>
 
         {/* Pending Actions */}
         <div>
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm overflow-hidden">
-            <div className="p-6 border-b border-gray-200 dark:border-gray-700">
-              <h2 className="text-xl font-bold text-gray-800 dark:text-white">Pending Actions</h2>
-            </div>
-            
+          <SectionContainer
+            title="Pending Actions"
+            actionButton={
+              <Link
+                to="/admin/transactions"
+                className="text-sm text-primary-dark dark:text-primary-light hover:underline"
+              >
+                View All
+              </Link>
+            }
+          >
             <div className="divide-y divide-gray-200 dark:divide-gray-700">
-              {pendingActions.map((action) => (
-                <div key={action.id} className="p-4 hover:bg-gray-50 dark:hover:bg-gray-900 transition-colors">
-                  <div className="flex justify-between items-center">
-                    <div>
-                      <h3 className="font-medium text-gray-800 dark:text-white">{action.type}</h3>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">{action.user}</p>
-                    </div>
-                    <div className="text-right">
-                      {action.amount && (
-                        <p className="font-medium text-gray-800 dark:text-white">{action.amount}</p>
-                      )}
-                      <button className="text-xs bg-primary-dark hover:bg-primary-light text-white px-3 py-1 rounded-full">
-                        Review
-                      </button>
-                    </div>
-                  </div>
-                </div>
+              {pendingTransactions.map((transaction) => (
+                <PendingActionCard
+                  key={transaction.id}
+                  transaction={transaction}
+                  onReview={handleReviewAction}
+                />
               ))}
             </div>
-          </div>
-
-          {/* Quick Admin Actions */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm overflow-hidden mt-8">
-            <div className="p-6 border-b border-gray-200 dark:border-gray-700">
-              <h2 className="text-xl font-bold text-gray-800 dark:text-white">Quick Actions</h2>
-            </div>
-            
-            <div className="grid grid-cols-2 gap-4 p-6">
-              <button className="bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-900/40 text-blue-600 dark:text-blue-400 p-4 rounded-xl flex flex-col items-center transition-colors">
-                <FiUsers className="w-6 h-6 mb-2" />
-                <span className="text-sm font-medium">Manage Users</span>
-              </button>
-              
-              <button className="bg-green-50 dark:bg-green-900/30 hover:bg-green-100 dark:hover:bg-green-900/40 text-green-600 dark:text-green-400 p-4 rounded-xl flex flex-col items-center transition-colors">
-                <FiCreditCard className="w-6 h-6 mb-2" />
-                <span className="text-sm font-medium">Gift Cards</span>
-              </button>
-              
-              <button className="bg-purple-50 dark:bg-purple-900/30 hover:bg-purple-100 dark:hover:bg-purple-900/40 text-purple-600 dark:text-purple-400 p-4 rounded-xl flex flex-col items-center transition-colors">
-                <BsCurrencyExchange className="w-6 h-6 mb-2" />
-                <span className="text-sm font-medium">Crypto</span>
-              </button>
-              
-              <button className="bg-yellow-50 dark:bg-yellow-900/30 hover:bg-yellow-100 dark:hover:bg-yellow-900/40 text-yellow-600 dark:text-yellow-400 p-4 rounded-xl flex flex-col items-center transition-colors">
-                <RiExchangeLine className="w-6 h-6 mb-2" />
-                <span className="text-sm font-medium">Transactions</span>
-              </button>
-              
-              <button className="bg-red-50 dark:bg-red-900/30 hover:bg-red-100 dark:hover:bg-red-900/40 text-red-600 dark:text-red-400 p-4 rounded-xl flex flex-col items-center transition-colors">
-                <FiShield className="w-6 h-6 mb-2" />
-                <span className="text-sm font-medium">Security</span>
-              </button>
-              
-              <button className="bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 text-gray-600 dark:text-gray-300 p-4 rounded-xl flex flex-col items-center transition-colors">
-                <FiSettings className="w-6 h-6 mb-2" />
-                <span className="text-sm font-medium">Settings</span>
-              </button>
-            </div>
-          </div>
+          </SectionContainer>
         </div>
       </div>
 
       {/* Platform Metrics */}
-      <div className=" mt-8">
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-xl font-bold text-gray-800 dark:text-white">Platform Metrics</h2>
-            <div className="flex space-x-2">
-              <button className="px-3 py-1 text-sm bg-gray-100 dark:bg-gray-700 rounded-full">Daily</button>
-              <button className="px-3 py-1 text-sm bg-primary-dark dark:bg-primary-light text-white rounded-full">Weekly</button>
-              <button className="px-3 py-1 text-sm bg-gray-100 dark:bg-gray-700 rounded-full">Monthly</button>
-            </div>
-          </div>
-          
+      <div className="mt-8">
+        <SectionContainer title="Platform Metrics" className="p-6">
+          <MetricsHeader
+            periods={periods}
+            activePeriod={activePeriod}
+            onPeriodChange={handlePeriodChange}
+          />
+
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div className="lg:col-span-2 bg-gray-50 dark:bg-gray-700 rounded-xl p-6">
-              <h3 className="text-lg font-medium text-gray-800 dark:text-white mb-4">Transaction Volume (₦)</h3>
+            <ChartContainer
+              title="Transaction Volume (₦)"
+              className="lg:col-span-2"
+              loading={chartLoading}
+            >
               <Chart
-                options={transactionVolumeOptions}
-                series={transactionVolumeSeries}
+                options={transactionVolumeData.options}
+                series={transactionVolumeData.series}
                 type="area"
                 height={350}
               />
-            </div>
-            <div className="bg-gray-50 dark:bg-gray-700 rounded-xl p-6">
-              <h3 className="text-lg font-medium text-gray-800 dark:text-white mb-4">User Growth</h3>
+            </ChartContainer>
+
+            <ChartContainer title="User Growth" loading={chartLoading}>
               <Chart
-                options={userGrowthOptions}
-                series={userGrowthSeries}
+                options={userGrowthData.options}
+                series={userGrowthData.series}
                 type="line"
                 height={350}
               />
-            </div>
+            </ChartContainer>
           </div>
-          
-          <div className="mt-8 bg-gray-50 dark:bg-gray-700 rounded-xl p-6">
-            <h3 className="text-lg font-medium text-gray-800 dark:text-white mb-4">Transaction Types</h3>
-            <div className="flex justify-center">
-              <div className="w-full max-w-md">
-                <Chart
-                  options={transactionTypeOptions}
-                  series={transactionTypeSeries}
-                  type="donut"
-                  height={350}
-                />
+
+          <div className="mt-8">
+            <ChartContainer title="Transaction Types" loading={chartLoading}>
+              <div className="flex justify-center">
+                <div className="w-full max-w-md">
+                  <Chart
+                    options={transactionTypeData.options}
+                    series={transactionTypeData.series}
+                    type="donut"
+                    height={350}
+                  />
+                </div>
               </div>
-            </div>
+            </ChartContainer>
           </div>
-        </div>
+        </SectionContainer>
       </div>
     </div>
   );
