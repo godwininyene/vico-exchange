@@ -6,6 +6,7 @@ import usePagination from '../../hooks/usePagination';
 import useDebounce from '../../hooks/useDebounce';
 import { toast } from 'react-toastify';
 import TransactionsList from '../../components/TransactionsList';
+import Loader from '../../components/Loader';
 
 const Transactions = () => {
   // State for filters and pagination
@@ -15,9 +16,9 @@ const Transactions = () => {
   const [statusFilter, setStatusFilter] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const debouncedSearchQuery = useDebounce(searchQuery, 500); // 500ms delay
+  const [loading, setLoading] = useState(false);
 
-
- const {pagination, updatePagination} = usePagination();
+  const {pagination, updatePagination} = usePagination();
 
   const handleAssetTypeChange = (assetFilter) => {
     setAssetFilter(assetFilter);
@@ -44,6 +45,7 @@ const Transactions = () => {
   
   // Fetch transactions with filters
   const fetchTransactions = async(page = 1, search = '', status = '', assetFilter = '', transactionType = '') => {
+    setLoading(true);
     let url = `api/v1/transactions?page=${page}&limit=${pagination.perPage}`;
     
     if (search) {
@@ -72,6 +74,9 @@ const Transactions = () => {
       }
     } catch(err) {
       console.log(err);
+      toast.error('Failed to fetch transactions');
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -79,12 +84,12 @@ const Transactions = () => {
   useEffect(() => {
     fetchTransactions(
       1, 
-      searchQuery, 
+      debouncedSearchQuery, 
       statusFilter === 'all' ? '' : statusFilter,
       assetFilter === 'all' ? '' : assetFilter,
       transactionTypeFilter === 'all' ? '' : transactionTypeFilter
     );
-  }, [debouncedSearchQuery,assetFilter, statusFilter, transactionTypeFilter]);
+  }, [debouncedSearchQuery, assetFilter, statusFilter, transactionTypeFilter]);
 
 
   return (
@@ -127,14 +132,21 @@ const Transactions = () => {
         }
       />
      
-
-      {/* Recent Transactions */}
-      <TransactionsList
-        transactions={transactions}
-        pagination={pagination}
-        onPageChange={handlePageChange}
-        context='user'
-      />
+      {/* Transactions List with Loader */}
+      {loading ? (
+        <div className="mt-6">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm overflow-hidden min-h-96 flex items-center justify-center">
+            <Loader size={8} />
+          </div>
+        </div>
+      ) : (
+        <TransactionsList
+          transactions={transactions}
+          pagination={pagination}
+          onPageChange={handlePageChange}
+          context='user'
+        />
+      )}
     </div>
   );
 };
