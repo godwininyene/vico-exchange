@@ -18,7 +18,7 @@ import UserQuickAction from "../../components/UserQuickAction";
 const Dashboard = () => {
   // const accountBalance = 12500.75;
   const [recentTransactions, setRecentTransactions] = useState([]);
-  const[accountBalance, setAccountBalance] = useState(0)
+  const [accountBalance, setAccountBalance] = useState(0)
   const [loading, setLoading] = useState(false);
   const [fetched, setFetched] = useState(false);
 
@@ -140,7 +140,7 @@ const Dashboard = () => {
                 <Link to='/user/sell-crypto' className="cursor-pointer bg-white text-blue-600 hover:bg-blue-50 px-4 py-2 rounded-full text-sm font-medium transition-colors">
                   Quick Trade
                 </Link>
-                <Link  to='/user/transactions' className="bg-white/10 text-white hover:bg-white/20 px-4 py-2 rounded-full text-sm font-medium transition-colors">
+                <Link to='/user/transactions' className="bg-white/10 text-white hover:bg-white/20 px-4 py-2 rounded-full text-sm font-medium transition-colors">
                   View Details
                 </Link>
               </div>
@@ -155,10 +155,9 @@ const Dashboard = () => {
       {/* Stats Cards */}
       <div className="container mx-auto px-4 -mt-5 relative z-50">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {stats.length > 0 &&
-            stats.map((stat, index) => (
-              <StatCard stat={stat} key={index} loading={loading && !fetched} />
-            ))}
+          {stats.map((stat, index) => (
+            <StatCard stat={stat} key={index} loading={loading && !fetched} />
+          ))}
         </div>
       </div>
 
