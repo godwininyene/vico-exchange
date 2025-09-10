@@ -10,6 +10,7 @@ import Modal from '../../components/Modal';
 import EditCardContainer from './../../components/EditCardContainer';
 import axios from './../../lib/axios';
 import useDebounce from '../../hooks/useDebounce';
+import Loader from '../../components/Loader'; // Import Loader component
 
 const Giftcards = () => {
   // State management
@@ -31,9 +32,11 @@ const Giftcards = () => {
   const [errors, setErrors] = useState({});
   const [processing, setProcessing] = useState(false);
   const { pagination, updatePagination } = usePagination();
+  const [loading, setLoading] = useState(false); // Add loading state
 
   // Fetch giftcards with filters
   const fetchGiftcards = async (page = 1, search = '', status = '') => {
+    setLoading(true); // Set loading to true when fetching starts
     let url = `api/v1/giftcards?page=${page}&limit=${pagination.perPage}`;
     
     if (search) {
@@ -56,6 +59,8 @@ const Giftcards = () => {
     } catch (err) {
       console.log(err);
       toast.error('Failed to fetch gift cards');
+    } finally {
+      setLoading(false); // Set loading to false when done
     }
   };
 
@@ -275,13 +280,22 @@ const Giftcards = () => {
         ]}
       />
    
-      <AdminGiftcardsList 
-        cards={cards}
-        onDeleteCard={handleDeleteCard}
-        onEditModal={openEditModal}
-        pagination={pagination}
-        onPageChange={handlePageChange}
-      />
+      {/* Giftcards List with Loader */}
+      {loading ? (
+        <div className="mt-6">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm overflow-hidden min-h-96 flex items-center justify-center">
+            <Loader size={8} />
+          </div>
+        </div>
+      ) : (
+        <AdminGiftcardsList 
+          cards={cards}
+          onDeleteCard={handleDeleteCard}
+          onEditModal={openEditModal}
+          pagination={pagination}
+          onPageChange={handlePageChange}
+        />
+      )}
     </div>
   );
 };

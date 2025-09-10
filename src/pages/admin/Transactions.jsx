@@ -9,12 +9,13 @@ import axios from './../../lib/axios'
 import usePagination from '../../hooks/usePagination';
 import useDebounce from '../../hooks/useDebounce';
 import { toast } from 'react-toastify';
+import Loader from '../../components/Loader';
 
 const Transactions = () => {
   const [transactions, setTransactions] = useState([]);
   const [isApproving, setIsApproving] = useState(false);
   const [isDeclining, setIsDeclining] = useState(false);
-
+  const [loading, setLoading] = useState(false); 
   // State for filters
   const [assetFilter, setAssetFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
@@ -30,6 +31,7 @@ const Transactions = () => {
 
   // Fetch transactions with filters
   const fetchTransactions = async(page = 1, search = '', status = '', assetFilter = '', transactionType = '') => {
+    setLoading(true);
     let url = `api/v1/transactions?page=${page}&limit=${pagination.perPage}`;
     
     if (search) {
@@ -58,6 +60,9 @@ const Transactions = () => {
       }
     } catch(err) {
       console.log(err);
+      toast.error('Failed to fetch transactions');
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -65,12 +70,12 @@ const Transactions = () => {
   useEffect(() => {
     fetchTransactions(
       1, 
-      searchQuery, 
+      debouncedSearchQuery, 
       statusFilter === 'all' ? '' : statusFilter,
       assetFilter === 'all' ? '' : assetFilter,
       transactionTypeFilter === 'all' ? '' : transactionTypeFilter
     );
-  }, [debouncedSearchQuery,assetFilter, statusFilter, transactionTypeFilter]);
+  }, [debouncedSearchQuery, assetFilter, statusFilter, transactionTypeFilter]);
 
   const handleStatusChange = (status) => {
     setStatusFilter(status);
@@ -155,7 +160,6 @@ const Transactions = () => {
       {/* Transaction Details Modal */}
       {isModalOpen && selectedTransaction && (
         <Modal
-        
           isOpen={isModalOpen}
           closeModal={closeModal}
           header={`Transaction Details - ${selectedTransaction.ref}`}
@@ -180,7 +184,7 @@ const Transactions = () => {
       <DataFilters
         filterHeader={'Transaction'}
         searchQuery={searchQuery}
-         onSearchSubmit={(e) => e.preventDefault()} 
+        onSearchSubmit={(e) => e.preventDefault()} 
         filters={
           [
             {
@@ -214,14 +218,22 @@ const Transactions = () => {
         }
       />
      
-      {/* Transactions List */}
-      <TransactionsList
-        transactions={transactions}
-        openTransactionDetails={openTransactionDetails}
-        pagination={pagination}
-        onPageChange={handlePageChange}
-        context='admin'
-      />
+     
+      {loading ? (
+        <div className="mt-6">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm overflow-hidden min-h-96 flex items-center justify-center">
+            <Loader size={8} />
+          </div>
+        </div>
+      ) : (
+        <TransactionsList
+          transactions={transactions}
+          openTransactionDetails={openTransactionDetails}
+          pagination={pagination}
+          onPageChange={handlePageChange}
+          context='admin'
+        />
+      )}
     </div>
   );
 };

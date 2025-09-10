@@ -9,6 +9,7 @@ import usePagination from '../../hooks/usePagination';
 import useDebounce from '../../hooks/useDebounce';
 import axios from './../../lib/axios';
 import { toast } from 'react-toastify';
+import Loader from "../../components/Loader";
 
 const Users = () => {
   // State for filters, pagination, and selected user
@@ -21,9 +22,11 @@ const Users = () => {
   const debouncedSearchQuery = useDebounce(searchQuery, 500);
   const [updating, setUpdating] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [loading, setLoading] = useState(false); // Add loading state
 
   // Fetch users with filters
   const fetchUsers = async (page = 1, search = '', status = '') => {
+    setLoading(true); // Set loading to true when fetching starts
     let url = `api/v1/users?page=${page}&limit=${pagination.perPage}`;
     
     if (search) {
@@ -47,6 +50,8 @@ const Users = () => {
     } catch (err) {
       console.log(err);
       toast.error('Failed to fetch users');
+    } finally {
+      setLoading(false); // Set loading to false when done
     }
   };
 
@@ -177,11 +182,19 @@ const Users = () => {
         ]}
       />
 
-      {/* Users Table */}
-      <UsersList
-        users={users}
-        onOpenUserDetails={openUserDetails}
-      />
+      {/* Users Table with Loader */}
+      {loading ? (
+        <div className="mt-6">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm overflow-hidden min-h-96 flex items-center justify-center">
+            <Loader size={8} />
+          </div>
+        </div>
+      ) : (
+        <UsersList
+          users={users}
+          onOpenUserDetails={openUserDetails}
+        />
+      )}
     </div>
   );
 };

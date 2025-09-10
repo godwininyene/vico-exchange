@@ -10,6 +10,7 @@ import { toast } from 'react-toastify';
 import useDebounce from '../../hooks/useDebounce';
 import Modal from '../../components/Modal';
 import EditCoinContainer from '../../components/EditCoinContainer';
+import Loader from '../../components/Loader'; // Import Loader component
 
 const Coins = () => {
   // State management
@@ -31,9 +32,11 @@ const Coins = () => {
   const [errors, setErrors] = useState({});
   const [processing, setProcessing] = useState(false);
   const { pagination, updatePagination } = usePagination();
+  const [loading, setLoading] = useState(false); // Add loading state
 
   // Fetch coins with filters
   const fetchCoins = async (page = 1, search = '', status = '') => {
+    setLoading(true); // Set loading to true when fetching starts
     let url = `api/v1/coins?page=${page}&limit=${pagination.perPage}`;
     
     if (search) {
@@ -56,6 +59,8 @@ const Coins = () => {
     } catch (err) {
       console.log(err);
       toast.error('Failed to fetch coins');
+    } finally {
+      setLoading(false); // Set loading to false when done
     }
   };
   
@@ -273,14 +278,22 @@ const Coins = () => {
         ]}
       />
    
-      {/* Cryptocurrencies Table */}
-      <AdminCoinsList
-        coins={coins}
-        onDeleteCoin={deleteCoin}
-        onOpenEditModal={openEditModal}
-        pagination={pagination}
-        onPageChange={handlePageChange}
-      />
+      {/* Cryptocurrencies Table with Loader */}
+      {loading ? (
+        <div className="mt-6">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm overflow-hidden min-h-96 flex items-center justify-center">
+            <Loader size={8} />
+          </div>
+        </div>
+      ) : (
+        <AdminCoinsList
+          coins={coins}
+          onDeleteCoin={deleteCoin}
+          onOpenEditModal={openEditModal}
+          pagination={pagination}
+          onPageChange={handlePageChange}
+        />
+      )}
     </div>
   );
 };

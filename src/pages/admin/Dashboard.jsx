@@ -2,7 +2,6 @@ import {
   FiUsers,
   FiCreditCard,
   FiActivity,
-  FiShield,
   FiSettings,
 } from "react-icons/fi";
 import { BsCurrencyExchange } from "react-icons/bs";
@@ -20,6 +19,8 @@ import { useState, useEffect } from "react";
 import axios from "./../../lib/axios";
 import { toast } from "react-toastify";
 import { Link } from "react-router-dom";
+import EmptyMessage from "../../components/EmptyMessage";
+import Loader from "../../components/Loader";
 
 const Dashboard = () => {
   // State for stats data
@@ -198,7 +199,11 @@ const Dashboard = () => {
   const [fetched, setFetched] = useState(false);
   const periods = ["Daily", "Weekly", "Monthly"];
 
+  const [loadingRecent, setLoadingRecent] = useState(false);
+  const [loadingPending, setLoadingPending] = useState(false);
+
   const fetchRecentTransactions = async () => {
+    setLoadingRecent(true);
     try {
       const res = await axios.get("api/v1/transactions/recent");
       if (res.data.status === "success") {
@@ -206,10 +211,13 @@ const Dashboard = () => {
       }
     } catch (err) {
       console.log(err);
+    } finally {
+      setLoadingRecent(false);
     }
   };
 
   const fetchPendingTransactions = async () => {
+    setLoadingPending(true);
     try {
       const res = await axios.get("api/v1/transactions/pending");
       if (res.data.status === "success") {
@@ -217,6 +225,8 @@ const Dashboard = () => {
       }
     } catch (err) {
       console.log(err);
+    } finally {
+      setLoadingPending(false);
     }
   };
   const fetchStats = async () => {
@@ -247,9 +257,9 @@ const Dashboard = () => {
 
           return {
             title: stat.title,
-            total:stat.total,
+            total: stat.total,
             currentValue: stat.currentValue,
-            preValue:stat.preValue,
+            preValue: stat.preValue,
             change: stat.change,
             icon: icon
           };
@@ -435,14 +445,21 @@ const Dashboard = () => {
             }
           >
             <div className="divide-y divide-gray-200 dark:divide-gray-700">
-              {recentTransactions.map((transaction) => (
-                <Transaction
-                  key={transaction.id}
-                  transaction={transaction}
-                  variant="dashboard"
-                  context="admin"
-                />
-              ))}
+              {loadingRecent ? (
+                <Loader size={8} />
+              ) : recentTransactions.length > 0 ? (
+                recentTransactions.map((transaction) => (
+                  <Transaction
+                    key={transaction.id}
+                    transaction={transaction}
+                    variant="dashboard"
+                    context="admin"
+                  />
+                ))
+              ) : (
+                <EmptyMessage message="No recent transactions found" />
+              )}
+
             </div>
           </SectionContainer>
 
@@ -474,12 +491,6 @@ const Dashboard = () => {
                   url="/admin/transactions"
                   color="yellow"
                 />
-                {/* <AdminQuickAction
-                  Icon={FiShield}
-                  label="Security"
-                  url="/admin/security"
-                  color="red"
-                /> */}
                 <AdminQuickAction
                   Icon={FiSettings}
                   label="Settings"
@@ -505,13 +516,21 @@ const Dashboard = () => {
             }
           >
             <div className="divide-y divide-gray-200 dark:divide-gray-700">
-              {pendingTransactions.map((transaction) => (
-                <PendingActionCard
-                  key={transaction.id}
-                  transaction={transaction}
-                  onReview={handleReviewAction}
-                />
-              ))}
+
+              {loadingPending ? (
+                <Loader size={8} />
+              ) : recentTransactions.length > 0 ? (
+                pendingTransactions.map((transaction) => (
+                  <PendingActionCard
+                    key={transaction.id}
+                    transaction={transaction}
+                    onReview={handleReviewAction}
+                  />
+                ))
+              ) : (
+                <EmptyMessage message="No pending transactions found" />
+              )}
+
             </div>
           </SectionContainer>
         </div>
