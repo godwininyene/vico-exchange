@@ -3,8 +3,6 @@ import {
   FiCreditCard,
   FiDollarSign,
   FiTrendingUp,
-  FiArrowUp,
-  FiArrowDown,
 } from "react-icons/fi";
 import { BsCurrencyExchange } from "react-icons/bs";
 import axios from "../../lib/axios";
@@ -14,15 +12,47 @@ import SectionContainer from "../../components/SectionContainer";
 import { Link } from "react-router-dom";
 import StatCard from "../../components/StatCard";
 import UserQuickAction from "../../components/UserQuickAction";
+import { toast } from "react-toastify";
+import EmptyMessage from "../../components/EmptyMessage";
+import Loader from "../../components/Loader";
 
 const Dashboard = () => {
-  // const accountBalance = 12500.75;
   const [recentTransactions, setRecentTransactions] = useState([]);
-  const [accountBalance, setAccountBalance] = useState(0)
+  const [accountBalance, setAccountBalance] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [loadingRecent, setLoadingRecent] = useState(false);
   const [fetched, setFetched] = useState(false);
 
+  // Initialize stats as an array, not an object
+  const [stats, setStats] = useState([
+    {
+      title: "Total Assets",
+      value: "$0.00",
+      change: "0%",
+      icon: <FiDollarSign size={24} />,
+    },
+    {
+      title: "Crypto Holdings",
+      value: "$0.00",
+      change: "0%",
+      icon: <BsCurrencyExchange size={24} />,
+    },
+    {
+      title: "Gift Card Balance",
+      value: "$0.00",
+      change: "0%",
+      icon: <FiCreditCard size={24} />,
+    },
+    {
+      title: "Monthly Growth",
+      value: "$0.00",
+      change: "0%",
+      icon: <FiTrendingUp size={24} />,
+    }
+  ]);
+
   const fetchRecentTransactions = async () => {
+    setLoadingRecent(true);
     try {
       const res = await axios.get("api/v1/transactions/recent");
       if (res.data.status === "success") {
@@ -30,34 +60,12 @@ const Dashboard = () => {
       }
     } catch (err) {
       console.log(err);
+      toast.error("Failed to fetch recent transactions");
+    } finally {
+      setLoadingRecent(false);
     }
   };
 
-  const [stats, setStats] = useState(
-    {
-      title: "Total Assets",
-      value: "$12,500.75",
-      change: "+5.2%",
-    },
-    {
-      title: "Crypto Holdings",
-      value: "$8,200.00",
-      change: "+12.1%",
-      icon: <BsCurrencyExchange size={24} />,
-    },
-    {
-      title: "Gift Card Balance",
-      value: "$4,300.75",
-      change: "-2.3%",
-      icon: <FiCreditCard size={24} />,
-    },
-    {
-      title: "Monthly Growth",
-      value: "+$1,250.50",
-      change: "+8.7%",
-      icon: <FiTrendingUp size={24} />,
-    }
-  );
   const fetchStats = async () => {
     setLoading(true);
     try {
@@ -70,7 +78,7 @@ const Dashboard = () => {
           switch (stat.title) {
             case "Total Assets":
               icon = <FiDollarSign size={24} />;
-              setAccountBalance(stat.value)
+              setAccountBalance(stat.value);
               break;
             case "Crypto Holdings":
               icon = <BsCurrencyExchange size={24} />;
@@ -209,16 +217,22 @@ const Dashboard = () => {
             </Link>
           }
         >
-          <div className="divide-y divide-gray-200 dark:divide-gray-700">
-            {recentTransactions.map((transaction) => (
-              <Transaction
-                key={transaction.id}
-                transaction={transaction}
-                variant="dashboard"
-                context="user"
-              />
-            ))}
-          </div>
+          {loadingRecent ? (
+            <Loader size={8} />
+          ) : recentTransactions.length > 0 ? (
+            <div className="divide-y divide-gray-200 dark:divide-gray-700">
+              {recentTransactions.map((transaction) => (
+                <Transaction
+                  key={transaction.id}
+                  transaction={transaction}
+                  variant="dashboard"
+                  context="user"
+                />
+              ))}
+            </div>
+          ) : (
+            <EmptyMessage message="No recent transactions found" />
+          )}
         </SectionContainer>
       </div>
     </div>
