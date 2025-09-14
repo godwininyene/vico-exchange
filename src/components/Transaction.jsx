@@ -22,7 +22,7 @@ const Transaction = ({
       showTypeBadge: true,
       iconSize: 20,
       iconPadding: "p-3",
-      layout: "flex-col sm:flex-row", // Stack on mobile, row on larger screens
+      layout: "flex-col", // Always column layout for better mobile handling
     },
     compact: {
       container:
@@ -38,7 +38,7 @@ const Transaction = ({
     },
     dashboard: {
       container:
-        "p-3 hover:bg-gray-50 dark:hover:bg-gray-900 transition-colors cursor-pointer rounded-lg",
+        "p-3 hover:bg-gray-50 dark:hover:bg-gray-900 transition-colors cursor-pointer rounded-lg border border-gray-200 dark:border-gray-700 mb-2 w-full", // Added full width and border
       showDetailsButton: false,
       showUser: context === "admin",
       showFullDescription: true,
@@ -46,7 +46,7 @@ const Transaction = ({
       showTypeBadge: false,
       iconSize: 16,
       iconPadding: "p-2",
-      layout: "flex-col sm:flex-row", // Stack on mobile, row on larger screens
+      layout: "flex", // Changed to simple flex
     },
   };
 
@@ -126,37 +126,77 @@ const Transaction = ({
 
     // Default (fiat/giftcard) case
     if (typeof transaction.amount === "number") {
-      return `${sign}₦${transaction.amount.toLocaleString()}`;
+      return `${sign}¥${transaction.amount.toLocaleString()}`;
     }
 
-    return `${sign}₦${transaction.amount}`;
+    return `${sign}¥${transaction.amount}`;
   };
 
+  // For dashboard variant, use a simpler layout
+  if (variant === "dashboard") {
+    return (
+      <div className={config.container} onClick={handleClick}>
+        <div className="flex items-center justify-between w-full">
+          <div className="flex items-center flex-1 min-w-0">
+            <div className={`rounded-full flex-shrink-0 ${config.iconPadding} ${getTransactionIconContainerClass()}`}>
+              {getTransactionIcon()}
+            </div>
+            
+            <div className="ml-3 min-w-0 flex-1">
+              <h3 className="font-medium text-gray-800 dark:text-white truncate">
+                {getDisplayDescription()}
+              </h3>
+              <div className="flex items-center mt-1">
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  {formatDate(transaction.createdAt)}
+                </p>
+                {isAdmin && transaction.user && (
+                  <span className="text-xs text-gray-500 dark:text-gray-400 ml-2 flex items-center">
+                    <FiUser size={12} className="mr-1" />
+                    {getDisplayUser()}
+                  </span>
+                )}
+              </div>
+            </div>
+          </div>
+          
+          <div className="flex items-center flex-shrink-0 ml-2">
+            <div className="text-right">
+              <div className={`font-medium whitespace-nowrap ${
+                transaction.flowType === "deposit" 
+                  ? "text-green-600 dark:text-green-400" 
+                  : "text-red-600 dark:text-red-400"
+              }`}>
+                {formatTransactionAmount(transaction)}
+              </div>
+            </div>
+            <FiChevronRight size={18} className="text-gray-400 dark:text-gray-500 ml-2" />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Default implementation for other variants
   return (
-    <div className={config.container } onClick={handleClick}>
-      <div className={`flex justify-between items-start ${config.layout} gap-3`}>
+    <div className={config.container} onClick={handleClick}>
+      <div className={`flex justify-between ${config.layout} gap-3`}>
         <div className="flex items-start flex-1 min-w-0">
-          <div
-            className={`rounded-full flex-shrink-0 ${
-              config.iconPadding
-            } ${getTransactionIconContainerClass()}`}
-          >
+          <div className={`rounded-full flex-shrink-0 ${config.iconPadding} ${getTransactionIconContainerClass()}`}>
             {getTransactionIcon()}
           </div>
 
           <div className="ml-3 min-w-0 flex-1">
-            <div className="flex items-center justify-between">
-              <h3 className="font-medium text-gray-800 dark:text-white truncate pr-2">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+              <h3 className="font-medium text-gray-800 dark:text-white break-words pr-2">
                 {getDisplayDescription()}
               </h3>
-              <div className="sm:hidden flex-shrink-0">
-                <div
-                  className={`text-right whitespace-nowrap font-medium ${
-                    transaction.flowType === "deposit"
-                      ? "text-green-600 dark:text-green-400"
-                      : "text-red-600 dark:text-red-400"
-                  }`}
-                >
+              <div className="sm:hidden flex-shrink-0 mt-1">
+                <div className={`whitespace-nowrap font-medium ${
+                  transaction.flowType === "deposit" 
+                    ? "text-green-600 dark:text-green-400" 
+                    : "text-red-600 dark:text-red-400"
+                }`}>
                   {formatTransactionAmount(transaction)}
                 </div>
               </div>
@@ -185,19 +225,17 @@ const Transaction = ({
         </div>
 
         <div className="hidden sm:flex items-center gap-3 flex-shrink-0">
-          <div className="text-right">
+          <div className="text-right min-w-0">
             {transaction.amount && (
               <>
-                <div
-                  className={`font-medium whitespace-nowrap ${
-                    transaction.flowType === "deposit"
-                      ? "text-green-600 dark:text-green-400"
-                      : "text-red-600 dark:text-red-400"
-                  }`}
-                >
+                <div className={`font-medium whitespace-nowrap ${
+                  transaction.flowType === "deposit" 
+                    ? "text-green-600 dark:text-green-400" 
+                    : "text-red-600 dark:text-red-400"
+                }`}>
                   {formatTransactionAmount(transaction)}
                 </div>
-                <div className="text-sm text-gray-500 dark:text-gray-400 whitespace-nowrap text-wrap">
+                <div className="text-sm text-gray-500 dark:text-gray-400 whitespace-nowrap truncate">
                   {transaction.flowType === 'deposit' ? '+' : '-'}${transaction.usdAmount}
                 </div>
               </>
@@ -223,11 +261,12 @@ const Transaction = ({
               <FiEye size={18} />
             </button>
           )}
-          
-          {/* Show chevron on mobile instead of eye icon */}
-          <div className="sm:hidden text-gray-400 dark:text-gray-500">
-            <FiChevronRight size={18} />
-          </div>
+        </div>
+       {/* Test */}
+        
+        {/* Show chevron on mobile instead of eye icon */}
+        <div className="sm:hidden text-gray-400 dark:text-gray-500 self-center">
+          <FiChevronRight size={18} />
         </div>
       </div>
     </div>
