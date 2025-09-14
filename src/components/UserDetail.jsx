@@ -55,7 +55,7 @@ const UserDetail = ({
                 Full Name
               </p>
               <p className="text-gray-800 dark:text-white">
-                {user.name}
+                {user.firstName} {" "} {user.lastName}
               </p>
             </div>
             <div>
