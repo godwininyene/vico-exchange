@@ -22,7 +22,7 @@ const Transaction = ({
       showTypeBadge: true,
       iconSize: 20,
       iconPadding: "p-3",
-      layout: "flex-col", // Always column layout for better mobile handling
+      layout: "flex-col sm:flex-row", // Stack on mobile, row on larger screens
     },
     compact: {
       container:
@@ -133,8 +133,8 @@ const Transaction = ({
   };
 
   return (
-    <div className={config.container} onClick={handleClick}>
-      <div className={`flex justify-between ${config.layout} gap-3`}>
+    <div className={config.container } onClick={handleClick}>
+      <div className={`flex justify-between items-start ${config.layout} gap-3`}>
         <div className="flex items-start flex-1 min-w-0">
           <div
             className={`rounded-full flex-shrink-0 ${
@@ -145,13 +145,13 @@ const Transaction = ({
           </div>
 
           <div className="ml-3 min-w-0 flex-1">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-              <h3 className="font-medium text-gray-800 dark:text-white break-words pr-2">
+            <div className="flex items-center justify-between">
+              <h3 className="font-medium text-gray-800 dark:text-white truncate pr-2">
                 {getDisplayDescription()}
               </h3>
-              <div className="sm:hidden flex-shrink-0 mt-1">
+              <div className="sm:hidden flex-shrink-0">
                 <div
-                  className={`whitespace-nowrap font-medium ${
+                  className={`text-right whitespace-nowrap font-medium ${
                     transaction.flowType === "deposit"
                       ? "text-green-600 dark:text-green-400"
                       : "text-red-600 dark:text-red-400"
@@ -185,7 +185,7 @@ const Transaction = ({
         </div>
 
         <div className="hidden sm:flex items-center gap-3 flex-shrink-0">
-          <div className="text-right min-w-0">
+          <div className="text-right">
             {transaction.amount && (
               <>
                 <div
@@ -197,7 +197,7 @@ const Transaction = ({
                 >
                   {formatTransactionAmount(transaction)}
                 </div>
-                <div className="text-sm text-gray-500 dark:text-gray-400 whitespace-nowrap truncate">
+                <div className="text-sm text-gray-500 dark:text-gray-400 whitespace-nowrap text-wrap">
                   {transaction.flowType === 'deposit' ? '+' : '-'}${transaction.usdAmount}
                 </div>
               </>
@@ -223,11 +223,11 @@ const Transaction = ({
               <FiEye size={18} />
             </button>
           )}
-        </div>
-        
-        {/* Show chevron on mobile instead of eye icon */}
-        <div className="sm:hidden text-gray-400 dark:text-gray-500 self-center">
-          <FiChevronRight size={18} />
+          
+          {/* Show chevron on mobile instead of eye icon */}
+          <div className="sm:hidden text-gray-400 dark:text-gray-500">
+            <FiChevronRight size={18} />
+          </div>
         </div>
       </div>
     </div>
