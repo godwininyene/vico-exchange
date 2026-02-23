@@ -1,16 +1,79 @@
-import { FiTrash2 } from "react-icons/fi";
+import { useState } from "react";
+import { FiTrash2, FiPlusCircle, FiMinusCircle } from "react-icons/fi";
 import { FaUserTimes, FaUserCheck } from 'react-icons/fa';
 import StatusBadge from "./StatusBadge";
 import formatDate from "../utils/formatDate";
 import ActionButton from "./ActionButton";
+import InputField from "./InputField";
+import { toast } from "react-toastify";
+import axios from "../lib/axios";
 
-const UserDetail = ({ 
-  user, 
-  onDeleteUser, 
+const UserDetail = ({
+  user,
+  onDeleteUser,
   isDeleting,
   onStatusChange,
   updating
 }) => {
+  const [amount, setAmount] = useState("");
+  const [note, setNote] = useState("");
+  const [funding, setFunding] = useState(false);
+  const [deducting, setDeducting] = useState(false);
+
+  console.log('USER', user);
+
+
+  const handleFundWallet = async () => {
+    if (!amount || Number(amount) < 100) {
+      return toast.error("Minimum amount is ₦100");
+    }
+
+    try {
+      setFunding(true);
+      const res = await axios.patch(`/api/v1/users/${user.id}/wallets`, {
+        amount: Number(amount),
+        action: 'increment',
+        note,
+      });
+
+      if (res.data.status === "success") {
+        toast.success("Wallet funded successfully");
+        user.vtuBalance+=parseInt(amount)
+        setAmount("");
+        setNote("");
+      }
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Failed to fund wallet");
+    } finally {
+      setFunding(false);
+    }
+  };
+
+  const handleDeductWallet = async () => {
+    if (!amount || Number(amount) < 100) {
+      return toast.error("Minimum amount is ₦100");
+    }
+
+    try {
+      setDeducting(true);
+      const res = await axios.patch(`/api/v1/users/${user.id}/wallets`, {
+        amount: Number(amount),
+        action: 'decrement',
+        note,
+      });
+
+      if (res.data.status === "success") {
+        toast.success("Wallet deducted successfully");
+        setAmount("");
+         user.vtuBalance-=parseInt(amount)
+        setNote("");
+      }
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Failed to deduct wallet");
+    } finally {
+      setDeducting(false);
+    }
+  };
   return (
     <div className="space-y-6 p-6">
       {/* Profile Header with Photo */}
@@ -18,8 +81,8 @@ const UserDetail = ({
         <div className="flex-shrink-0">
           <div className="w-24 h-24 rounded-full bg-gray-200 dark:bg-gray-600 flex items-center justify-center overflow-hidden">
             {user.photo ? (
-              <img 
-                src={user.photo} 
+              <img
+                src={user.photo}
                 alt={user.firstName}
                 className="w-full h-full object-cover"
               />
@@ -30,7 +93,7 @@ const UserDetail = ({
             )}
           </div>
         </div>
-        
+
         <div className="flex-1">
           <h2 className="text-2xl font-bold text-gray-800 dark:text-white">
             {user.firstName} {" "} {user.lastName}
@@ -98,7 +161,7 @@ const UserDetail = ({
                 {formatDate(user.createdAt)}
               </p>
             </div>
-           
+
             <div>
               <p className="text-sm text-gray-500 dark:text-gray-400">
                 Total Transactions
@@ -115,7 +178,74 @@ const UserDetail = ({
                 ₦{user.transactionVolume.toLocaleString()}
               </p>
             </div>
+
+            <div>
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                VTU Wallet Balance
+              </p>
+              <p className="text-gray-800 dark:text-white">
+                ₦{user.vtuBalance.toLocaleString()}
+              </p>
+            </div>
+
+            <div>
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                VTU Volume
+              </p>
+              <p className="text-gray-800 dark:text-white">
+                ₦{Number(user.vtuVolume).toLocaleString()}
+              </p>
+            </div>
+
+            <div>
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                VTU Profit from user
+              </p>
+              <p className="text-gray-800 dark:text-white">
+                ₦{Number(user.vtuProfit).toLocaleString()}
+              </p>
+            </div>
           </div>
+        </div>
+      </div>
+
+
+      {/* Wallet Management */}
+      <div className="pt-6 border-t border-gray-200 dark:border-gray-700">
+        <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-4">
+          Manage Wallet
+        </h3>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <InputField
+            type="number"
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+            placeholder="Amount (min ₦100)"
+
+          />
+        </div>
+
+        <div className="mt-4 flex gap-3">
+          <ActionButton
+            onClick={handleFundWallet}
+            loading={funding}
+            disabled={funding || deducting}
+            icon={FiPlusCircle}
+            variant="success"
+          >
+            Fund Wallet
+          </ActionButton>
+
+          <ActionButton
+            onClick={handleDeductWallet}
+            loading={deducting}
+            disabled={funding || deducting}
+            icon={FiMinusCircle}
+            variant="danger"
+          >
+            Deduct Wallet
+          </ActionButton>
         </div>
       </div>
 
@@ -131,7 +261,7 @@ const UserDetail = ({
           >
             Delete User
           </ActionButton>
-          
+
           {user.status === 'active' ? (
             <ActionButton
               onClick={() => onStatusChange('deactivate', user)}

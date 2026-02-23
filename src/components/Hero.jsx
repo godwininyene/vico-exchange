@@ -4,39 +4,41 @@ import { Link } from 'react-router-dom';
 const Hero = () => {
   return (
     <section className="bg-[#0f172a]">
-      <div className="container mx-auto px-4 py-20 ">
-        <div className="flex flex-col lg:flex-row  gap-8 lg:gap-12">
-          {/* Left Column - Content */}
+      <div className="container mx-auto px-4 py-20">
+        <div className="flex flex-col lg:flex-row gap-8 lg:gap-12">
+          
+          {/* Left Column */}
           <div className="lg:w-1/2">
             <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold leading-tight mb-6 text-white">
-              Sell Gift Cards & Crypto with ease
+              Trade Crypto & Gift Cards. Buy Airtime & Data — Instantly.
             </h1>
             <p className="text-lg md:text-xl mb-8 text-text-light">
-              Exchange your gift cards and cryptocurrencies at fair rates. Fast payments, no hassle, no complications.
+              Your all-in-one platform for crypto exchange, gift card trading, VTU top-ups, and cable subscriptions. Fast payouts, fair rates, zero stress.
             </p>
-            
+
             <div className="flex flex-wrap gap-4">
               <Link 
-                to='/signup' 
+                to="/signup" 
                 className="bg-primary-dark hover:bg-primary-light text-white font-medium py-3 px-8 rounded-lg transition-all duration-300"
               >
                 Trade Online
               </Link>
               <Link 
-                to='' 
+                to="/whatsapp" 
                 className="bg-transparent hover:bg-gray-200 border-2 border-primary-light text-primary-light font-medium py-3 px-8 rounded-lg transition-all duration-300"
               >
-                Trade On Whatsapp
+                Trade on WhatsApp
               </Link>
             </div>
           </div>
 
-          {/* Right Column - Image */}
-          <div className="lg:w-1/2 mt-10 lg:mt-0">
+          {/* Right Column */}
+          <div className="lg:w-1/2 mt-10 lg:mt-0 relative">
+            <div className="absolute -inset-4 bg-primary-dark/20 blur-3xl rounded-full"></div>
             <img 
               src={hero_img} 
-              alt="Digital currency exchange illustration" 
-              className="w-full h-auto max-w-xl mx-auto"
+              alt="All-in-one digital services platform" 
+              className="relative w-full h-auto max-w-xl mx-auto"
             />
           </div>
         </div>

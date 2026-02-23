@@ -1,6 +1,15 @@
 import SectionCTA from '../components/SectionCTA';
 import servicesHero from './../assets/images/about-03.jpg';
-import { FaExchangeAlt, FaMoneyBillWave, FaShieldAlt, FaChartLine, FaHeadset, FaCoins } from 'react-icons/fa';
+import { 
+  FaExchangeAlt, 
+  FaMoneyBillWave, 
+  FaShieldAlt, 
+  FaChartLine, 
+  FaHeadset, 
+  FaCoins,
+  FaMobileAlt,
+  FaTv
+} from 'react-icons/fa';
 
 const Services = () => {
   return (
@@ -20,14 +29,14 @@ const Services = () => {
             className="text-4xl md:text-5xl font-bold mb-4"
             data-aos="fade-up"
           >
-            Our Trading Solutions
+            Our Digital Services
           </h1>
           <p 
             className="text-xl max-w-2xl mx-auto"
             data-aos="fade-up"
             data-aos-delay="100"
           >
-            Secure, fast, and reliable digital asset exchange services
+            Trade crypto, sell gift cards, buy airtime & data, and pay bills — all in one platform
           </p>
         </div>
       </section>
@@ -37,185 +46,107 @@ const Services = () => {
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4" data-aos="fade-up">
-              Digital Asset Exchange Services
+              What You Can Do on Vico Exchange
             </h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto" data-aos="fade-up" data-aos-delay="100">
-              We provide comprehensive solutions for all your digital trading needs
+              A complete fintech platform for trading and everyday digital payments
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {/* Service 1 */}
-            <div 
-              className="bg-white p-8 rounded-xl shadow-sm hover:shadow-md transition-all duration-300"
-              data-aos="fade-up"
-              data-aos-delay="200"
-            >
+            {/* Gift Card Exchange */}
+            <div className="bg-white p-8 rounded-xl shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300" data-aos="fade-up">
               <div className="w-16 h-16 bg-primary-dark rounded-full flex items-center justify-center text-white text-2xl mb-6">
                 <FaExchangeAlt />
               </div>
               <h3 className="text-xl font-semibold mb-3 text-gray-900">Gift Card Exchange</h3>
               <p className="text-gray-600 mb-4">
-                Easily buy and sell gift cards from top brands at competitive rates. Fast and secure transactions guaranteed.
+                Sell local and international gift cards at competitive rates with fast payouts.
               </p>
               <ul className="space-y-2 text-gray-600">
-                <li className="flex items-start">
-                  <span className="text-primary-dark mr-2">✓</span>
-                  <span>Amazon, iTunes, Steam, and more</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-primary-dark mr-2">✓</span>
-                  <span>Instant rate calculations</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-primary-dark mr-2">✓</span>
-                  <span>No hidden fees</span>
-                </li>
+                <li>✓ Amazon, iTunes, Steam & more</li>
+                <li>✓ Instant rate calculation</li>
+                <li>✓ No hidden charges</li>
               </ul>
             </div>
 
-            {/* Service 2 */}
-            <div 
-              className="bg-white p-8 rounded-xl shadow-sm hover:shadow-md transition-all duration-300"
-              data-aos="fade-up"
-              data-aos-delay="300"
-            >
+            {/* Crypto Trading */}
+            <div className="bg-white p-8 rounded-xl shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300" data-aos="fade-up" data-aos-delay="100">
               <div className="w-16 h-16 bg-primary-dark rounded-full flex items-center justify-center text-white text-2xl mb-6">
                 <FaCoins />
               </div>
               <h3 className="text-xl font-semibold mb-3 text-gray-900">Cryptocurrency Trading</h3>
               <p className="text-gray-600 mb-4">
-                Trade popular cryptocurrencies with ease. Buy, sell, or exchange crypto quickly and securely.
+                Buy and sell popular cryptocurrencies with real-time market rates.
               </p>
               <ul className="space-y-2 text-gray-600">
-                <li className="flex items-start">
-                  <span className="text-primary-dark mr-2">✓</span>
-                  <span>BTC, ETH, USDT, and more</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-primary-dark mr-2">✓</span>
-                  <span>Real-time market rates</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-primary-dark mr-2">✓</span>
-                  <span>Low transaction fees</span>
-                </li>
+                <li>✓ BTC, ETH, USDT & more</li>
+                <li>✓ Fast confirmations</li>
+                <li>✓ Low transaction fees</li>
               </ul>
             </div>
 
-            {/* Service 3 */}
-            <div 
-              className="bg-white p-8 rounded-xl shadow-sm hover:shadow-md transition-all duration-300"
-              data-aos="fade-up"
-              data-aos-delay="400"
-            >
+            {/* VTU */}
+            <div className="bg-white p-8 rounded-xl shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300" data-aos="fade-up" data-aos-delay="200">
               <div className="w-16 h-16 bg-primary-dark rounded-full flex items-center justify-center text-white text-2xl mb-6">
-                <FaMoneyBillWave />
+                <FaMobileAlt />
               </div>
-              <h3 className="text-xl font-semibold mb-3 text-gray-900">Instant Payouts</h3>
+              <h3 className="text-xl font-semibold mb-3 text-gray-900">VTU (Airtime & Data)</h3>
               <p className="text-gray-600 mb-4">
-                Get instant payouts for your gift cards or crypto transactions. No delays, just quick and reliable payments.
+                Instantly buy airtime and mobile data for all major networks.
               </p>
               <ul className="space-y-2 text-gray-600">
-                <li className="flex items-start">
-                  <span className="text-primary-dark mr-2">✓</span>
-                  <span>Multiple payout options</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-primary-dark mr-2">✓</span>
-                  <span>Bank transfer, mobile money, crypto</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-primary-dark mr-2">✓</span>
-                  <span>24/7 processing</span>
-                </li>
+                <li>✓ MTN, Airtel, Glo & 9mobile</li>
+                <li>✓ Instant delivery</li>
+                <li>✓ Affordable data plans</li>
               </ul>
             </div>
 
-            {/* Service 4 */}
-            <div 
-              className="bg-white p-8 rounded-xl shadow-sm hover:shadow-md transition-all duration-300"
-              data-aos="fade-up"
-              data-aos-delay="200"
-            >
+            {/* Cable TV */}
+            <div className="bg-white p-8 rounded-xl shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300" data-aos="fade-up">
               <div className="w-16 h-16 bg-primary-dark rounded-full flex items-center justify-center text-white text-2xl mb-6">
-                <FaChartLine />
+                <FaTv />
               </div>
-              <h3 className="text-xl font-semibold mb-3 text-gray-900">Competitive Rates</h3>
+              <h3 className="text-xl font-semibold mb-3 text-gray-900">Cable TV Subscriptions</h3>
               <p className="text-gray-600 mb-4">
-                Enjoy the best rates in the market for both gift cards and cryptocurrency. Maximize your value every time you trade.
+                Pay for your cable TV subscriptions and entertainment services easily.
               </p>
               <ul className="space-y-2 text-gray-600">
-                <li className="flex items-start">
-                  <span className="text-primary-dark mr-2">✓</span>
-                  <span>Rate comparison tool</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-primary-dark mr-2">✓</span>
-                  <span>Bulk trade discounts</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-primary-dark mr-2">✓</span>
-                  <span>Loyalty rewards</span>
-                </li>
+                <li>✓ DSTV, GOTV & more</li>
+                <li>✓ Instant activation</li>
+                <li>✓ No queues, no stress</li>
               </ul>
             </div>
 
-            {/* Service 5 */}
-            <div 
-              className="bg-white p-8 rounded-xl shadow-sm hover:shadow-md transition-all duration-300"
-              data-aos="fade-up"
-              data-aos-delay="300"
-            >
+            {/* Support */}
+            <div className="bg-white p-8 rounded-xl shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300" data-aos="fade-up" data-aos-delay="100">
               <div className="w-16 h-16 bg-primary-dark rounded-full flex items-center justify-center text-white text-2xl mb-6">
                 <FaHeadset />
               </div>
-              <h3 className="text-xl font-semibold mb-3 text-gray-900">24/7 Support</h3>
+              <h3 className="text-xl font-semibold mb-3 text-gray-900">24/7 Customer Support</h3>
               <p className="text-gray-600 mb-4">
-                Our dedicated support team is available around the clock to assist you with any questions or issues.
+                Our support team is always available to help you resolve any issues.
               </p>
               <ul className="space-y-2 text-gray-600">
-                <li className="flex items-start">
-                  <span className="text-primary-dark mr-2">✓</span>
-                  <span>Live chat support</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-primary-dark mr-2">✓</span>
-                  <span>Email and phone support</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-primary-dark mr-2">✓</span>
-                  <span>Detailed FAQs and guides</span>
-                </li>
+                <li>✓ Live chat support</li>
+                <li>✓ Email & WhatsApp support</li>
+                <li>✓ Helpful guides</li>
               </ul>
             </div>
 
-            {/* Service 6 */}
-            <div 
-              className="bg-white p-8 rounded-xl shadow-sm hover:shadow-md transition-all duration-300"
-              data-aos="fade-up"
-              data-aos-delay="400"
-            >
+            {/* Security */}
+            <div className="bg-white p-8 rounded-xl shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300" data-aos="fade-up" data-aos-delay="200">
               <div className="w-16 h-16 bg-primary-dark rounded-full flex items-center justify-center text-white text-2xl mb-6">
                 <FaShieldAlt />
               </div>
               <h3 className="text-xl font-semibold mb-3 text-gray-900">Secure Transactions</h3>
               <p className="text-gray-600 mb-4">
-                Your security is our priority. All transactions are protected with top-tier encryption and security protocols.
+                Your transactions and personal data are protected with industry-standard security practices.
               </p>
               <ul className="space-y-2 text-gray-600">
-                {/* <li className="flex items-start">
-                  <span className="text-primary-dark mr-2">✓</span>
-                  <span>2FA authentication</span>
-                </li> */}
-                <li className="flex items-start">
-                  <span className="text-primary-dark mr-2">✓</span>
-                  <span>Cold storage for crypto</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-primary-dark mr-2">✓</span>
-                  <span>Regular security audits</span>
-                </li>
+                <li>✓ Encrypted transactions</li>
+                <li>✓ Secure wallets</li>
+                <li>✓ Continuous monitoring</li>
               </ul>
             </div>
           </div>

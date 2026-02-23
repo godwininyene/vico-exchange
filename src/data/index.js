@@ -10,12 +10,28 @@ export const transactionFilterOptions = [
   { value: "sell", label: "Sell" },
 ];
 
+export const vtTransactionFilterOptions = [
+  { label: "All", value: "all" },
+  { label: "Airtime", value: "airtime" },
+  { label: "Data", value: "data" },
+  { label: "Electricity", value: "electricity" },
+  { label: "Cable TV", value: "cable" },
+  { label: "Exam Pins", value: "exam" },
+];
+
 export const transactionStatusFilterOptions = [
   { value: "all", label: "All Statuses" },
   { value: "completed", label: "Completed" },
   { value: "pending", label: "Pending" },
   { value: "failed", label: "Failed" },
 ];
+
+export const vtuTransactionStatusFilterOptions = [
+  { value: "all", label: "All Statuses" },
+  { value: "success", label: "Success" },
+  { value: "pending", label: "Pending" },
+  { value: "failed", label: "Failed" },
+]
 
 export const assetStatusFilterOptions = [
   { value: "all", label: "All Statuses" },

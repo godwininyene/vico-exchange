@@ -17,6 +17,12 @@ const AssetCard = ({ asset, assetType, onClick }) => {
         rate: asset.coinRate,
         address: asset.coinAddress
       };
+    } else if (assetType == 'network') {
+      return {
+        id: asset.identifier,
+        name: asset.name,
+        image: asset.logo,
+      };
     }
     return {};
   };
@@ -37,14 +43,21 @@ const AssetCard = ({ asset, assetType, onClick }) => {
       <img
         src={assetDetails.image}
         alt={assetDetails.name}
-        className="w-16 h-16 object-contain mb-3"
+        className="w-16 h-16 object-contain mb-3 rounded-2xl"
       />
       <h3 className="font-medium text-gray-800 dark:text-white text-center">
         {assetDetails.name}
       </h3>
-      <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+      {/* <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
         Rate: ₦{assetDetails.rate.toLocaleString()}/$
-      </p>
+      </p> */}
+
+      {/* Show rate only for coin & giftcard */}
+      {assetDetails.rate && (
+        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+          Rate: ₦{assetDetails.rate.toLocaleString()}/$
+        </p>
+      )}
       {assetType === 'giftcard' && (
         <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
           Type: {assetDetails.type}

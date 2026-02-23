@@ -15,3 +15,13 @@
 }
 
 
+.network-btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 25px;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.3s;
+}
+

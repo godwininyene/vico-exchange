@@ -9,12 +9,20 @@ const StatusBadge = ({ status, usage = null }) => {
       bgColor = "bg-green-100 dark:bg-green-900/30";
       textColor = "text-green-800 dark:text-green-200";
       break;
+    case "success":
+      bgColor = "bg-green-100 dark:bg-green-900/30";
+      textColor = "text-green-800 dark:text-green-200";
+      break;
     case "pending":
       bgColor = "bg-yellow-100 dark:bg-yellow-900/30";
       textColor = "text-yellow-800 dark:text-yellow-200";
       icon = usage === "user" ? <FiUserX className="mr-1" /> : null;
       break;
-    case "declined":
+    case "declined" || "failed":
+      bgColor = "bg-red-100 dark:bg-red-900/30";
+      textColor = "text-red-800 dark:text-red-200";
+      break;
+    case "failed":
       bgColor = "bg-red-100 dark:bg-red-900/30";
       textColor = "text-red-800 dark:text-red-200";
       break;
