@@ -46,7 +46,7 @@ const BuyCableSubscription = () => {
           const res = await axios.get(`/api/v1/cables/plans?service=${selectedProvider.identifier}`);
           setPlans(res.data.data.plans || []);
         } catch (err) {
-          toast.error("Failed to fetch plans");
+          toast.error("Plans currently not available. Please check back later");
         }
       };
       fetchPlans();
@@ -85,7 +85,7 @@ const BuyCableSubscription = () => {
     const payload = {
       serviceID: selectedProvider.identifier,
       phone: phoneNumber,
-      customerID:decoderNumber,
+      customerID: decoderNumber,
       variation_code: selectedPlan.value,
       requestId: uuidv4(),
     };

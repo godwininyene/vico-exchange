@@ -16,7 +16,7 @@ export default function PasswordReset() {
 
     // Get email from navigation state or default to empty
     const emailFromState = location.state?.email || '';
-    
+
     const [formData, setFormData] = useState({
         email: emailFromState,
         token: '',
@@ -26,7 +26,7 @@ export default function PasswordReset() {
 
     const handleChange = e => {
         const { name, value } = e.target;
-        setFormData({...formData, [name]: value});
+        setFormData({ ...formData, [name]: value });
     }
 
     // Prevent scrolling on desktop
@@ -44,19 +44,19 @@ export default function PasswordReset() {
         setProcessing(true);
         setError('');
         setSuccess('');
-        
+
         // Validate passwords match
         if (formData.password !== formData.password_confirmation) {
             setError('Passwords do not match');
             setProcessing(false);
             return;
         }
-        
+
         try {
             const response = await axios.post('api/v1/users/reset-password', formData);
             if (response.data.status === 'success') {
                 setSuccess('Password successfully reset! Redirecting to login...');
-                
+
                 // Navigate to login page after a short delay
                 setTimeout(() => {
                     navigate('/login', { state: { message: 'Password reset successful. Please login with your new password.' } });
@@ -76,23 +76,24 @@ export default function PasswordReset() {
     return (
         <>
             {/* Left hand content Start */}
-            <div className="hidden md:block bg-cover bg-center" style={{backgroundImage: `url(${bg})`}}>
+            <div className="hidden md:block bg-cover bg-center" style={{ backgroundImage: `url(${bg})` }}>
                 <div className="h-full bg-gradient-to-b from-[#000000ec] via-[#000000b9] to-[#000000b9] bg-opacity-20 text-primary">
                     <div className='h-full'>
                         <div className='text-center px-10 flex flex-col justify-center items-center h-full'>
                             <Link to='/' className='flex items-center flex-col'>
                                 <img src={logo} alt="" className={`h-16 inline-block`} />
                                 <span className='text-white text-3xl'>
-                                    VICO EXCHANGE
+                                    WinSubz
                                 </span>
                             </Link>
-                           
+
                             <h1 className='text-white text-3xl font-black pt-5'>
-                                Sell Gift Cards & Crypto with ease
+                                Trade Crypto & Gift Cards. Buy Airtime & Data — Instantly.
                             </h1>
                             <p className='text-gray-200'>
-                                Welcome to Vico Exchange – Buy and sell gift cards and cryptocurrency with ease Fast,
-                                secure transactions and great rates. Start trading today
+                                Your all-in-one platform for crypto exchange,
+                                gift card trading, VTU top-ups, and cable subscriptions.
+                                Fast payouts, fair rates, zero stress.
                             </p>
                         </div>
                     </div>
@@ -115,19 +116,19 @@ export default function PasswordReset() {
                             <p className='text-sm font-medium leading-[1.6] mb-8 dark:text-white'>
                                 Enter the token sent to your email and your new password.
                             </p>
-                            
+
                             {error && (
                                 <div className="mb-4 font-medium text-sm text-red-600 dark:text-red-400">
                                     {error}
                                 </div>
                             )}
-                            
+
                             {success && (
                                 <div className="mb-4 font-medium text-sm text-green-600 dark:text-green-400">
                                     {success}
                                 </div>
                             )}
-                            
+
                             <form onSubmit={handleSubmit}>
                                 <InputField
                                     type='email'
@@ -178,7 +179,7 @@ export default function PasswordReset() {
                                 />
 
                                 <div className='text-center'>
-                                    <Button 
+                                    <Button
                                         className='w-full'
                                         icon={<FiKey />}
                                         iconPosition='right'
@@ -189,16 +190,16 @@ export default function PasswordReset() {
                                         Reset Password
                                     </Button>
                                 </div>
-                                
+
                                 <div className='text-center mt-4'>
-                                    <Link 
-                                        to='/forgot-password' 
+                                    <Link
+                                        to='/forgot-password'
                                         className='inline-block text-sm text-blue-600 dark:text-blue-400 hover:underline'
                                     >
                                         Request a new token
                                     </Link>
                                 </div>
-                                
+
                                 <p className='block text-sm text-center mt-4 text-gray-500 dark:text-slate-100'>
                                     Remember your password?{' '}
                                     <Link to='/login' className='text-blue-600 dark:text-blue-400 hover:underline'>

@@ -27,7 +27,7 @@ const DataNetworkFormStage = ({
       }
     } catch (err) {
       console.log(err);
-      toast.error("Failed to fetch data plans");
+      toast.error("Plans currently not available. Please check back later");
     } finally {
       setProcessing(false);
     }

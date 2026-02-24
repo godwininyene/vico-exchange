@@ -9,7 +9,7 @@ import { useSearchParams, useNavigate } from 'react-router-dom';
 import axios from '../../lib/axios';
 
 export default function ForgotPassword() {
-    const [searchParams] = useSearchParams(); 
+    const [searchParams] = useSearchParams();
     const message = searchParams.get("message") || null;
     const [processing, setProcessing] = useState(false);
     const [error, setError] = useState('');
@@ -21,11 +21,11 @@ export default function ForgotPassword() {
 
     const handleChange = e => {
         const { name, value } = e.target;
-        setFormData({...formData, [name]: value});
+        setFormData({ ...formData, [name]: value });
     }
 
     const navigate = useNavigate();
-    
+
     // Prevent scrolling on desktop
     useEffect(() => {
         if (window.innerWidth >= 768) {
@@ -41,12 +41,12 @@ export default function ForgotPassword() {
         setProcessing(true);
         setError('');
         setSuccess('');
-        
+
         try {
             const response = await axios.post('api/v1/users/forgot-password', formData);
             if (response.data.status === 'success') {
                 setSuccess(`A password reset token has been sent to ${email}`);
-                 setTimeout(() => {
+                setTimeout(() => {
                     navigate('/password-reset', { state: { email } });
                 }, 2500);
             }
@@ -64,23 +64,24 @@ export default function ForgotPassword() {
     return (
         <>
             {/* Left hand content Start */}
-            <div className="hidden md:block bg-cover bg-center" style={{backgroundImage: `url(${bg})`}}>
+            <div className="hidden md:block bg-cover bg-center" style={{ backgroundImage: `url(${bg})` }}>
                 <div className="h-full bg-gradient-to-b from-[#000000ec] via-[#000000b9] to-[#000000b9] bg-opacity-20 text-primary">
                     <div className='h-full'>
                         <div className='text-center px-10 flex flex-col justify-center items-center h-full'>
                             <Link to='/' className='flex items-center flex-col'>
                                 <img src={logo} alt="" className={`h-16 inline-block`} />
                                 <span className='text-white text-3xl'>
-                                    VICO EXCHANGE
+                                    WinSubz
                                 </span>
                             </Link>
-                           
+
                             <h1 className='text-white text-3xl font-black pt-5'>
-                                Sell Gift Cards & Crypto with ease
+                                Trade Crypto & Gift Cards. Buy Airtime & Data — Instantly.
                             </h1>
                             <p className='text-gray-200'>
-                                Welcome to Vico Exchange – Buy and sell gift cards and cryptocurrency with ease Fast,
-                                secure transactions and great rates. Start trading today
+                                Your all-in-one platform for crypto exchange,
+                                gift card trading, VTU top-ups, and cable subscriptions.
+                                Fast payouts, fair rates, zero stress.
                             </p>
                         </div>
                     </div>
@@ -103,25 +104,25 @@ export default function ForgotPassword() {
                             <p className='text-sm font-medium leading-[1.6] mb-8 dark:text-white'>
                                 Enter your email address and we'll send you a token to reset your password.
                             </p>
-                            
+
                             {error && (
                                 <div className="mb-4 font-medium text-sm text-red-600 dark:text-red-400">
                                     {error}
                                 </div>
                             )}
-                            
+
                             {success && (
                                 <div className="mb-4 font-medium text-sm text-green-600 dark:text-green-400">
                                     {success}
                                 </div>
                             )}
-                            
+
                             {message && (
                                 <div className="mb-4 font-medium text-sm text-blue-600 dark:text-blue-400">
                                     {message}
                                 </div>
                             )}
-                            
+
                             <form onSubmit={handleSubmit}>
                                 <InputField
                                     type='email'
@@ -135,7 +136,7 @@ export default function ForgotPassword() {
                                 />
 
                                 <div className='text-center'>
-                                    <Button 
+                                    <Button
                                         className='w-full'
                                         icon={<FiMail />}
                                         iconPosition='right'
@@ -143,19 +144,19 @@ export default function ForgotPassword() {
                                         isLoading={processing}
                                         disabled={processing}
                                     >
-                                       Send Reset Token
+                                        Send Reset Token
                                     </Button>
                                 </div>
-                                
+
                                 <div className='text-center mt-4'>
-                                    <Link 
-                                        to='/login' 
+                                    <Link
+                                        to='/login'
                                         className='inline-block text-sm text-blue-600 dark:text-blue-400 hover:underline'
                                     >
                                         Back to Login
                                     </Link>
                                 </div>
-                                
+
                                 <p className='block text-sm text-center mt-4 text-gray-500 dark:text-slate-100'>
                                     Don't have an account?{' '}
                                     <Link to='/signup' className='text-blue-600 dark:text-blue-400 hover:underline'>

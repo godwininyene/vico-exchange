@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import {
   FiActivity,
   FiCreditCard,
@@ -23,24 +24,36 @@ import UserQuickAction from "../../components/UserQuickAction";
 import { toast } from "react-toastify";
 import EmptyMessage from "../../components/EmptyMessage";
 import Loader from "../../components/Loader";
+import { BiCopy } from "react-icons/bi";
 
 const Dashboard = () => {
   const [recentTransactions, setRecentTransactions] = useState([]);
   const [recentVtuTransactions, setRecentVtuTransactions] = useState([]);
   const [accountBalance, setAccountBalance] = useState(0);
   const [vtuBalance, setVtuBalance] = useState("₦0.00");
+  const user = JSON.parse(localStorage.getItem('user'));
   const [loading, setLoading] = useState(false);
   const [loadingRecent, setLoadingRecent] = useState(false);
   const [fetched, setFetched] = useState(false);
 
   const [virtualAccount, setVirtualAccount] = useState(null);
   const [loadingAccount, setLoadingAccount] = useState(false);
+  const [showTip, setShowTip] = useState(false);
+
+  const reffid = useRef();
+
+  const copyReffLink = () => {
+    setShowTip(true);
+    reffid.current.select();
+    navigator.clipboard.writeText(reffid.current.value);
+  }
 
   const [stats, setStats] = useState([
+    { title: "VTU Wallet Balance", value: "₦0.00", change: "0%", icon: <FiActivity size={24} /> },
     { title: "Total Assets", value: "$0.00", change: "0%", icon: <FiDollarSign size={24} /> },
     { title: "Crypto Holdings", value: "$0.00", change: "0%", icon: <BsCurrencyExchange size={24} /> },
     { title: "Gift Card Balance", value: "$0.00", change: "0%", icon: <FiCreditCard size={24} /> },
-    { title: "VTU Wallet Balance", value: "₦0.00", change: "0%", icon: <FiActivity size={24} /> },
+
     { title: "Monthly Growth", value: "$0.00", change: "0%", icon: <FiTrendingUp size={24} /> },
   ]);
 
@@ -106,7 +119,7 @@ const Dashboard = () => {
     } catch (error) {
       toast.error("Failed to fetch dashboard statistics");
       console.log('STATS ERROR:', error);
-      
+
     } finally {
       setLoading(false);
     }
@@ -135,18 +148,42 @@ const Dashboard = () => {
   useEffect(() => {
     fetchRecentTransactions();
     fetchStats();
-    fetchVirtualAccount();
+    //fetchVirtualAccount();
   }, []);
 
 
   return (
     <div className="pb-10">
+
       {/* Hero */}
       <div className="relative rounded-tl-2xl rounded-tr-2xl bg-gradient-to-r from-primary-dark to-primary-light text-white pt-8 pb-16">
         <div className="container mx-auto px-4">
           <div className="rounded-t-3xl bg-white dark:bg-gray-900 pt-6 pb-8 px-6 shadow-lg">
-            <h1 className="text-2xl font-bold mb-2">Welcome Back!</h1>
+            <h1 className="text-2xl font-bold mb-2 text-gray-800 dark:text-white">Welcome Back, {user.firstName}!</h1>
             <p className="text-gray-500 mb-6">Here's your financial overview</p>
+
+            <div className="my-4">
+              <label className="block text-sm text-gray-600 dark:text-gray-400">Referral Link</label>
+              <div className="flex items-center mt-1">
+                <input
+                  type="text"
+                  ref={reffid}
+                  readOnly
+                  value={`${import.meta.env.VITE_APP_URL}/signup?refid=${user.accountId}`}
+                  className="flex-1 min-w-0 p-2 rounded-l-lg border border-gray-300 dark:border-slate-700 dark:bg-slate-700 text-gray-800 d dark:text-white truncate focus:outline-0 focus:border-primary-light"
+                />
+                <button
+                  onClick={copyReffLink}
+                  className="p-2 bg-primary-light cursor-pointer text-white rounded-r-lg hover:bg-primary-dark transition-colors"
+                >
+                  <BiCopy className="w-6 h-6" />
+
+                </button>
+              </div>
+              {showTip && (
+                <div className="text-sm text-green-600 mt-1">Copied to clipboard!</div>
+              )}
+            </div>
 
             <div className="grid md:grid-cols-2 gap-4">
               <div className="bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-2xl p-6 shadow-lg">
@@ -160,8 +197,10 @@ const Dashboard = () => {
               </div>
             </div>
 
+
+
             {/* Virtual Account */}
-            <div className="mt-6 bg-gray-50 dark:bg-gray-800 rounded-xl p-5 border">
+            {/* <div className="mt-6 bg-gray-50 dark:bg-gray-800 rounded-xl p-5 border">
               <h3 className="font-semibold mb-2">Fund Your VTU Wallet</h3>
               {loadingAccount ? (
                 <Loader size={6} />
@@ -188,13 +227,13 @@ const Dashboard = () => {
               ) : (
                 <EmptyMessage message="No funding account available" />
               )}
-            </div>
+            </div> */}
           </div>
         </div>
       </div>
 
       {/* Stats */}
-      <div className="container mx-auto px-4 -mt-5 relative z-50">
+      <div className="container mx-auto px-4 -mt-5 relative z-10">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {stats.map((stat, index) => (
             <StatCard stat={stat} key={index} loading={loading && !fetched} />
@@ -222,9 +261,9 @@ const Dashboard = () => {
 
       {/* VTU Transactions */}
       <div className="container mx-auto px-4 mt-10">
-        <SectionContainer 
-        title="Recent VTU Transactions"
-         actionButton={
+        <SectionContainer
+          title="Recent VTU Transactions"
+          actionButton={
             <Link to="/user/vtu-transactions" className="text-sm text-primary-dark hover:underline">
               View All
             </Link>

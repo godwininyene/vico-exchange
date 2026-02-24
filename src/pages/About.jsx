@@ -22,7 +22,7 @@ const About = () => {
             className="text-4xl md:text-5xl font-bold mb-4"
             data-aos="fade-up"
           >
-            About Vico Exchange
+            About Winsubz
           </h1>
           <p 
             className="text-xl max-w-2xl mx-auto"
@@ -41,7 +41,7 @@ const About = () => {
             <div data-aos="fade-right">
               <h2 className="text-3xl font-bold text-gray-900 mb-6">Our Story</h2>
               <p className="text-gray-600 mb-4">
-                Vico Exchange is a modern fintech platform built to simplify digital transactions. 
+                Winsubz is a modern fintech platform built to simplify digital transactions. 
                 We started by helping users exchange gift cards and cryptocurrencies quickly and securely, 
                 and we’ve grown into a complete digital services platform.
               </p>

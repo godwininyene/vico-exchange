@@ -188,7 +188,7 @@ const Sidebar = ({ user, isOpen, onClose }) => {
   return (
     <>
       <aside
-        className={`fixed inset-y-0 left-0 z-40 w-64 border-r border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 transition-all duration-300 ease-in-out
+        className={`fixed inset-y-0 left-0 z-50 w-64 border-r border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 transition-all duration-300 ease-in-out
         ${isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}
       >
         {/* Logo */}

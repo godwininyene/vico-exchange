@@ -81,16 +81,17 @@ export default function Login() {
                             <Link to='/' className='flex items-center flex-col'>
                                 <img src={logo} alt="" className={`h-16 inline-block`} />
                                 <span className='text-white text-3xl'>
-                                    VICO EXCHANGE
+                                    WinSubz
                                 </span>
                             </Link>
                            
                             <h1 className='text-white text-3xl font-black pt-5'>
-                                Sell Gift Cards & Crypto with ease
+                                Trade Crypto & Gift Cards. Buy Airtime & Data — Instantly.
                             </h1>
                             <p className='text-gray-200'>
-                               Welcome to Vico Exchange – Buy and sell gift cards and cryptocurrency with ease Fast,
-                               secure transactions and great rates. Start trading today
+                              Your all-in-one platform for crypto exchange, 
+                              gift card trading, VTU top-ups, and cable subscriptions.
+                              Fast payouts, fair rates, zero stress.
                             </p>
                         </div>
                     </div>

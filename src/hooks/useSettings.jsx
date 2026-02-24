@@ -4,7 +4,7 @@ import { toast } from "react-toastify";
 
 // Default fallback settings
 const DEFAULT_SETTINGS = {
-  platformName: "VICO",
+  platformName: "Winsubz",
   adminEmail: "noblegodwin02@gmail.com",
   supportEmail: "godwinhigh2@gmail.com",
   supportPhone: "08144098649",

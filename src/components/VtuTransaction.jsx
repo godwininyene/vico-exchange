@@ -176,7 +176,7 @@ const VtuTransaction = ({
                   : "text-yellow-600 dark:text-yellow-400"
               }`}
             >
-              ₦{Number(transaction.faceValue).toLocaleString()}
+              ₦{Number(transaction.type ==='data' ? transaction.sellingPrice : transaction.faceValue).toLocaleString()}
             </p>
 
             {getStatusBadge(transaction.status)}

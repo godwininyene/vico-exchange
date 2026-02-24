@@ -9,7 +9,7 @@ const testimonials = [
     name: "Sarah Johnson",
     role: "Crypto Trader",
     image: sarah,
-    content: "Vico Exchange made selling my Bitcoin effortless. I received payment within minutes after verification. Their rates are really fair.",
+    content: "Winsubz made selling my Bitcoin effortless. I received payment within minutes after verification. Their rates are really fair.",
     rating: 5
   },
   {
@@ -17,7 +17,7 @@ const testimonials = [
     name: "Michael Chen",
     role: "Gift Card Seller",
     image: michael,
-    content: "I've used several platforms, but none compare to Vico Exchange speed and customer service. My gift cards were credited almost instantly.",
+    content: "I've used several platforms, but none compare to Winsubz speed and customer service. My gift cards were credited almost instantly.",
     rating: 5
   },
   {
