@@ -10,10 +10,10 @@ const Hero = () => {
           {/* Left Column */}
           <div className="lg:w-1/2">
             <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold leading-tight mb-6 text-white">
-              Trade Crypto & Gift Cards. Buy Airtime & Data — Instantly.
+              Trade Crypto & Gift Cards. Buy Airtime & Cheap Data — Instantly.
             </h1>
             <p className="text-lg md:text-xl mb-8 text-text-light">
-              Your all-in-one platform for crypto exchange, gift card trading, VTU top-ups, and cable subscriptions. Fast payouts, fair rates, zero stress.
+              Your all-in-one platform for crypto exchange, gift card trading, VTU top-ups, electricity payment, and cable subscriptions. Fast payouts, fair rates, zero stress.
             </p>
 
             <div className="flex flex-wrap gap-4">
@@ -21,10 +21,10 @@ const Hero = () => {
                 to="/signup" 
                 className="bg-primary-dark hover:bg-primary-light text-white font-medium py-3 px-8 rounded-lg transition-all duration-300"
               >
-                Trade Online
+                Get Started
               </Link>
               <Link 
-                to="/whatsapp" 
+                to="/" 
                 className="bg-transparent hover:bg-gray-200 border-2 border-primary-light text-primary-light font-medium py-3 px-8 rounded-lg transition-all duration-300"
               >
                 Trade on WhatsApp

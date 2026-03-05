@@ -107,8 +107,8 @@ const Contact = () => {
                   </div>
                   <div>
                     <h3 className="text-lg font-semibold text-gray-900 mb-2">Our Offices</h3>
-                    <p className="text-gray-600">47 Wood Circle, London - UK</p>
-                    <p className="text-gray-600 mt-2">29 Queens Street, Boston-00387</p>
+                    <p className="text-gray-600">Bishop House Amawire-Orji, Owerri Imo State</p>
+                    {/* <p className="text-gray-600 mt-2">29 Queens Street, Boston-00387</p> */}
                   </div>
                 </div>
 
@@ -118,7 +118,7 @@ const Contact = () => {
                   </div>
                   <div>
                     <h3 className="text-lg font-semibold text-gray-900 mb-2">Phone</h3>
-                    <p className="text-gray-600">(+44) 123 456 789</p>
+                    <p className="text-gray-600">(+234) 814 409 8649 </p>
                   </div>
                 </div>
 
@@ -128,7 +128,7 @@ const Contact = () => {
                   </div>
                   <div>
                     <h3 className="text-lg font-semibold text-gray-900 mb-2">Email</h3>
-                    <p className="text-gray-600">support@vicoexchange.com</p>
+                    <p className="text-gray-600">support@winsubz.com</p>
                   </div>
                 </div>
               </div>
@@ -136,7 +136,7 @@ const Contact = () => {
               <div className="pt-6">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">Follow Us On Social Media</h3>
                 <div className="flex space-x-4">
-                  <a href="#" className="bg-gray-100 hover:bg-primary-dark hover:text-white w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300">
+                  <a href="https://web.facebook.com/profile.php?id=100095105837122" className="bg-gray-100 hover:bg-primary-dark hover:text-white w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300">
                     <FaFacebook className="text-gray-700 hover:text-white" />
                   </a>
                   <a href="#" className="bg-gray-100 hover:bg-primary-dark hover:text-white w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300">

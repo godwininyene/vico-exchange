@@ -83,12 +83,12 @@ export default function PasswordReset() {
                             <Link to='/' className='flex items-center flex-col'>
                                 <img src={logo} alt="" className={`h-16 inline-block`} />
                                 <span className='text-white text-3xl'>
-                                    WinSubz
+                                    Winsubz
                                 </span>
                             </Link>
 
                             <h1 className='text-white text-3xl font-black pt-5'>
-                                Trade Crypto & Gift Cards. Buy Airtime & Data — Instantly.
+                                Trade Crypto & Gift Cards. Buy Airtime & Cheap Data — Instantly.
                             </h1>
                             <p className='text-gray-200'>
                                 Your all-in-one platform for crypto exchange,
