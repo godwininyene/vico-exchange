@@ -65,10 +65,10 @@ const Sidebar = ({ user, isOpen, onClose }) => {
     { name: "Cable Subscription", path: "/user/buy-cable-tv", icon: <FiTv size={18} /> },
 
     // Trading
-    { name: "Buy Gift Cards", path: "/user/buy-giftcard", icon: <FiShoppingCart size={18} /> },
-    { name: "Sell Gift Cards", path: "/user/sell-giftcard", icon: <FiDollarSign size={18} /> },
-    { name: "Buy Crypto", path: "/user/buy-crypto", icon: <FiTrendingUp size={18} /> },
-    { name: "Sell Crypto", path: "/user/sell-crypto", icon: <RiExchangeFill size={18} /> },
+    // { name: "Buy Gift Cards", path: "/user/buy-giftcard", icon: <FiShoppingCart size={18} /> },
+    // { name: "Sell Gift Cards", path: "/user/sell-giftcard", icon: <FiDollarSign size={18} /> },
+    // { name: "Buy Crypto", path: "/user/buy-crypto", icon: <FiTrendingUp size={18} /> },
+    // { name: "Sell Crypto", path: "/user/sell-crypto", icon: <RiExchangeFill size={18} /> },
 
     // Transactions Dropdown
     {
@@ -77,7 +77,7 @@ const Sidebar = ({ user, isOpen, onClose }) => {
       type: "dropdown",
       children: [
         { name: "VTU Transactions", path: "/user/vtu-transactions", icon: <FiWifi size={18} /> },
-        { name: "Trading Transactions", path: "/user/transactions", icon: <FiShoppingCart size={18} /> }
+        //{ name: "Trading Transactions", path: "/user/transactions", icon: <FiShoppingCart size={18} /> }
       ]
     },
 

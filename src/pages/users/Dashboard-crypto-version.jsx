@@ -185,16 +185,16 @@ const Dashboard = () => {
               )}
             </div>
 
-            <div className="grid md:grid-cols-2 gap-4 ">
+            <div className="grid md:grid-cols-2 gap-4">
               <div className="bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-2xl p-6 shadow-lg">
-                <p className="text-emerald-100">Wallet Balance</p>
+                <p className="text-emerald-100">VTU Wallet Balance</p>
                 <h2 className="text-3xl font-bold text-white">{vtuBalance}</h2>
               </div>
 
-              {/* <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl p-6 shadow-lg">
+              <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl p-6 shadow-lg">
                 <p className="text-blue-100">Total Assets (Crypto & Gift cards)</p>
                 <h2 className="text-3xl font-bold text-white">{accountBalance}</h2>
-              </div> */}
+              </div>
             </div>
 
 
@@ -232,14 +232,14 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* Stats  */}
-      {/* <div className="container mx-auto px-4 -mt-5 relative z-10">
+      {/* Stats */}
+      <div className="container mx-auto px-4 -mt-5 relative z-10">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {stats.map((stat, index) => (
             <StatCard stat={stat} key={index} loading={loading && !fetched} />
           ))}
         </div>
-      </div> */}
+      </div>
 
       {/* Quick Actions */}
       <div className="container mx-auto px-4 mt-10">
@@ -252,17 +252,17 @@ const Dashboard = () => {
           <UserQuickAction Icon={FiZap} label="Electricity" url="/user/buy-electricity-token" color="yellow" />
           <UserQuickAction Icon={FiTv} label="Cable TV" url="/user/buy-cable-tv" color="purple" />
           <UserQuickAction Icon={FiBookOpen} label="Education Pins" url="/user/education" color="green" />
-          {/* <UserQuickAction Icon={FiDollarSign} label="Sell Gift Card" url="/user/sell-giftcard" color="blue" />
+          <UserQuickAction Icon={FiDollarSign} label="Sell Gift Card" url="/user/sell-giftcard" color="blue" />
           <UserQuickAction Icon={BsCurrencyExchange} label="Buy Crypto" url="/user/buy-crypto" color="green" />
           <UserQuickAction Icon={FiCreditCard} label="Buy Gift Card" url="/user/buy-giftcard" color="purple" />
-          <UserQuickAction Icon={FiTrendingUp} label="Sell Crypto" url="/user/sell-crypto" color="orange" /> */}
+          <UserQuickAction Icon={FiTrendingUp} label="Sell Crypto" url="/user/sell-crypto" color="orange" />
         </div>
       </div>
 
       {/* VTU Transactions */}
       <div className="container mx-auto px-4 mt-10">
         <SectionContainer
-          title="Recent Transactions"
+          title="Recent VTU Transactions"
           actionButton={
             <Link to="/user/vtu-transactions" className="text-sm text-primary-dark hover:underline">
               View All
@@ -282,7 +282,7 @@ const Dashboard = () => {
       </div>
 
       {/* Crypto & Gift Card Transactions */}
-      {/* <div className="container mx-auto px-4 mt-10">
+      <div className="container mx-auto px-4 mt-10">
         <SectionContainer
           title="Recent Crypto & Gift Card Transactions"
           actionButton={
@@ -306,7 +306,7 @@ const Dashboard = () => {
             <EmptyMessage message="No recent transactions found" />
           )}
         </SectionContainer>
-      </div> */}
+      </div>
 
 
     </div>

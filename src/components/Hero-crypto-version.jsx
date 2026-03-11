@@ -1,4 +1,4 @@
-import hero_img from './../assets/images/hero_2.svg';
+import hero_img from './../assets/images/hero_bg.svg';
 import { Link } from 'react-router-dom';
 
 const Hero = () => {
@@ -10,13 +10,10 @@ const Hero = () => {
           {/* Left Column */}
           <div className="lg:w-1/2">
             <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold leading-tight mb-6 text-white">
-              Buy Cheap Data, Airtime & Pay Bills Instantly in Nigeria
+              Trade Crypto & Gift Cards. Buy Airtime & Cheap Data — Instantly.
             </h1>
-
             <p className="text-lg md:text-xl mb-8 text-text-light">
-              Winsubz is a fast and reliable VTU platform where you can buy cheap 
-              MTN, Airtel, Glo and 9mobile data, recharge airtime, pay electricity 
-              bills, and subscribe to DSTV, GOTV and Startimes instantly.
+              Your all-in-one platform for crypto exchange, gift card trading, VTU top-ups, electricity payment, and cable subscriptions. Fast payouts, fair rates, zero stress.
             </p>
 
             <div className="flex flex-wrap gap-4">
@@ -24,14 +21,13 @@ const Hero = () => {
                 to="/signup" 
                 className="bg-primary-dark hover:bg-primary-light text-white font-medium py-3 px-8 rounded-lg transition-all duration-300"
               >
-                Create Account
+                Get Started
               </Link>
-
               <Link 
-                to="/login" 
+                to="/" 
                 className="bg-transparent hover:bg-gray-200 border-2 border-primary-light text-primary-light font-medium py-3 px-8 rounded-lg transition-all duration-300"
               >
-                Login
+                Trade on WhatsApp
               </Link>
             </div>
           </div>
@@ -39,10 +35,9 @@ const Hero = () => {
           {/* Right Column */}
           <div className="lg:w-1/2 mt-10 lg:mt-0 relative">
             <div className="absolute -inset-4 bg-primary-dark/20 blur-3xl rounded-full"></div>
-
             <img 
               src={hero_img} 
-              alt="Buy cheap data, airtime and pay electricity bills online in Nigeria"
+              alt="All-in-one digital services platform" 
               className="relative w-full h-auto max-w-xl mx-auto"
             />
           </div>

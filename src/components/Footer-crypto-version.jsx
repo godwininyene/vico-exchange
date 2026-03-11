@@ -21,17 +21,14 @@ const Footer = () => {
           {/* About section */}
           <div className="mb-8">
             <Link to="/" className="flex items-center mb-4 gap-2">
-              <img src={logo} alt="Winsubz digital services platform" className="h-10" />
+              <img src={logo} alt="Company Logo" className="h-10" />
               <h1 className="font-bold text-lg">{generalData.platformName}</h1>
             </Link>
-
             <p className="text-gray-400 mb-6 leading-relaxed">
-              {generalData.platformName} is a fast and secure platform in Nigeria
-              for buying cheap data, recharging airtime, paying electricity bills,
-              and subscribing to cable TV services like DSTV, GOTV, and Startimes.
-              Enjoy instant delivery, reliable service, and 24/7 support.
+              {generalData.platformName} is a fast and secure digital services platform for trading gift cards,
+              cryptocurrencies, buying airtime & data, and paying for cable TV subscriptions. Enjoy instant delivery,
+              great rates, and reliable support — all in one place.
             </p>
-
             <div className="flex space-x-4">
               {generalData.socialLinks?.twitter && (
                 <a
@@ -43,7 +40,6 @@ const Footer = () => {
                   <FaTwitter size={20} />
                 </a>
               )}
-
               {generalData.socialLinks?.facebook && (
                 <a
                   href={generalData.socialLinks.facebook}
@@ -54,7 +50,6 @@ const Footer = () => {
                   <FaFacebook size={20} />
                 </a>
               )}
-
               {generalData.socialLinks?.instagram && (
                 <a
                   href={generalData.socialLinks.instagram}
@@ -65,7 +60,6 @@ const Footer = () => {
                   <FaInstagram size={20} />
                 </a>
               )}
-
               {generalData.socialLinks?.linkedin && (
                 <a
                   href={generalData.socialLinks.linkedin}
@@ -76,7 +70,6 @@ const Footer = () => {
                   <FaLinkedin size={20} />
                 </a>
               )}
-
               {generalData.socialLinks?.youtube && (
                 <a
                   href={generalData.socialLinks.youtube}
@@ -87,7 +80,6 @@ const Footer = () => {
                   <FaYoutube size={20} />
                 </a>
               )}
-
               {generalData.socialLinks?.tiktok && (
                 <a
                   href={generalData.socialLinks.tiktok}
@@ -105,31 +97,11 @@ const Footer = () => {
           <div className="mb-8">
             <h2 className="text-lg font-semibold mb-4 text-white">Quick Links</h2>
             <ul className="space-y-2">
-              <li>
-                <Link to="/" className="text-gray-400 hover:text-primary-dark">
-                  Home
-                </Link>
-              </li>
-              <li>
-                <Link to="/about" className="text-gray-400 hover:text-primary-dark">
-                  About Us
-                </Link>
-              </li>
-              <li>
-                <Link to="/services" className="text-gray-400 hover:text-primary-dark">
-                  Our Services
-                </Link>
-              </li>
-              <li>
-                <Link to="/contact" className="text-gray-400 hover:text-primary-dark">
-                  Contact
-                </Link>
-              </li>
-              {/* <li>
-                <Link to="/faq" className="text-gray-400 hover:text-primary-dark">
-                  FAQs
-                </Link>
-              </li> */}
+              <li><Link to="/" className="text-gray-400 hover:text-primary-dark">Home</Link></li>
+              <li><Link to="/about" className="text-gray-400 hover:text-primary-dark">About</Link></li>
+              <li><Link to="/services" className="text-gray-400 hover:text-primary-dark">Services</Link></li>
+              <li><Link to="/contact" className="text-gray-400 hover:text-primary-dark">Contact</Link></li>
+              <li><Link to="/faq" className="text-gray-400 hover:text-primary-dark">FAQs</Link></li>
             </ul>
           </div>
 
@@ -137,69 +109,40 @@ const Footer = () => {
           <div className="mb-8">
             <h2 className="text-lg font-semibold mb-4 text-white">Our Services</h2>
             <ul className="space-y-2">
-              <li>
-                <Link to="/services" className="text-gray-400 hover:text-primary-dark">
-                  Airtime Recharge
-                </Link>
-              </li>
-
-              <li>
-                <Link to="/services" className="text-gray-400 hover:text-primary-dark">
-                  Buy Cheap Data
-                </Link>
-              </li>
-
-              <li>
-                <Link to="/services" className="text-gray-400 hover:text-primary-dark">
-                  Pay Electricity Bills
-                </Link>
-              </li>
-
-              <li>
-                <Link to="/services" className="text-gray-400 hover:text-primary-dark">
-                  Cable TV Subscription
-                </Link>
-              </li>
+              <li><Link to="/services/crypto" className="text-gray-400 hover:text-primary-dark">Crypto Exchange</Link></li>
+              <li><Link to="/services/giftcards" className="text-gray-400 hover:text-primary-dark">Gift Card Exchange</Link></li>
+              <li><Link to="/services/vtu" className="text-gray-400 hover:text-primary-dark">VTU (Airtime & Data)</Link></li>
+              <li><Link to="/services/cable-tv" className="text-gray-400 hover:text-primary-dark">Cable TV Subscription</Link></li>
             </ul>
           </div>
 
           {/* Contact Info */}
           <div className="mb-8">
             <h2 className="text-lg font-semibold mb-4 text-white">Contact Us</h2>
-
             <ul className="space-y-3 text-gray-400">
-
               <li className="flex items-start">
                 <span className="mr-2">📍</span>
-                <span>
-                  Online Digital Services Platform • Serving Customers Across Nigeria
-                </span>
+                <span>Online Business • Serving Customers Nationwide</span>
               </li>
-
               <li className="flex items-center">
                 <span className="mr-2">📞</span>
                 <span>{generalData.supportPhone || 'Support available 24/7'}</span>
               </li>
-
               <li className="flex items-center">
                 <span className="mr-2">✉️</span>
-                <span>{generalData.supportEmail || 'support@winsubz.com'}</span>
+                <span>{generalData.supportEmail || 'support@yourplatform.com'}</span>
               </li>
-
               <li className="flex items-center">
                 <span className="mr-2">🕒</span>
                 <span>24/7 Customer Support</span>
               </li>
-
             </ul>
           </div>
         </div>
 
         {/* Copyright */}
         <div className="border-t border-gray-800 pt-6 mt-8 text-center text-gray-500 text-sm">
-          <p>
-            © {new Date().getFullYear()} {generalData.platformName}. All rights reserved.
-          </p>
+          <p>© {new Date().getFullYear()} {generalData.platformName}. All rights reserved.</p>
         </div>
       </div>
     </footer>

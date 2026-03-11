@@ -87,13 +87,24 @@ export default function PasswordReset() {
                                 </span>
                             </Link>
 
-                            <h1 className='text-white text-3xl font-black pt-5'>
+                            {/* <h1 className='text-white text-3xl font-black pt-5'>
                                 Trade Crypto & Gift Cards. Buy Airtime & Cheap Data — Instantly.
                             </h1>
                             <p className='text-gray-200'>
                                 Your all-in-one platform for crypto exchange,
                                 gift card trading, VTU top-ups, and cable subscriptions.
                                 Fast payouts, fair rates, zero stress.
+                            </p> */}
+
+                            <h1 className='text-white text-3xl font-black pt-5'>
+                                Buy Airtime, Data, Pay Bills & Subscribe Cable — Instantly.
+                            </h1>
+
+                            <p className='text-gray-200 mt-3'>
+                                Your trusted digital platform for fast and reliable
+                                airtime top-ups, cheap data bundles, electricity bill
+                                payments, and cable TV subscriptions. Secure,
+                                affordable and delivered instantly.
                             </p>
                         </div>
                     </div>

@@ -10,12 +10,12 @@ const SectionCTA = ()=>{
             Join thousands of satisfied traders enjoying our secure platform
           </p>
           <div className="flex flex-wrap justify-center gap-4" data-aos="fade-up" data-aos-delay="200">
-            <a 
-              href="/signup" 
+            <Link
+              to="/signup" 
               className="bg-white text-primary-dark hover:bg-gray-100 font-medium py-3 px-8 rounded-lg transition-all duration-300"
             >
-              Trade Online
-            </a>
+              Create Account
+            </Link>
             <Link
               to="/contact" 
               className="bg-transparent hover:bg-white/10 border-2 border-white text-white font-medium py-3 px-8 rounded-lg transition-all duration-300"
