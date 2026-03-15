@@ -8,18 +8,16 @@ import { FiKey, FiLock } from "react-icons/fi";
 import axios from '../../lib/axios';
 
 export default function PasswordReset() {
-    const location = useLocation();
+
     const navigate = useNavigate();
     const [processing, setProcessing] = useState(false);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
+    const searchParams = new URLSearchParams(document.location.search)
+    const token = searchParams.get('token')
 
-    // Get email from navigation state or default to empty
-    const emailFromState = location.state?.email || '';
 
     const [formData, setFormData] = useState({
-        email: emailFromState,
-        token: '',
         password: '',
         password_confirmation: ''
     });
@@ -53,7 +51,8 @@ export default function PasswordReset() {
         }
 
         try {
-            const response = await axios.post('api/v1/users/reset-password', formData);
+
+            const response = await axios.patch(`api/v1/users/resetPassword/${token}`, formData);
             if (response.data.status === 'success') {
                 setSuccess('Password successfully reset! Redirecting to login...');
 
@@ -141,30 +140,6 @@ export default function PasswordReset() {
                             )}
 
                             <form onSubmit={handleSubmit}>
-                                <InputField
-                                    type='email'
-                                    label='Email'
-                                    name='email'
-                                    placeholder="Enter your email"
-                                    classNames='mb-4'
-                                    value={formData.email}
-                                    onChange={handleChange}
-                                    required
-                                    disabled={!!emailFromState}
-                                />
-
-                                <InputField
-                                    type='text'
-                                    label='Reset Token'
-                                    name='token'
-                                    placeholder="Enter the token from your email"
-                                    classNames='mb-4'
-                                    value={formData.token}
-                                    onChange={handleChange}
-                                    required
-                                    icon={<FiKey />}
-                                />
-
                                 <InputField
                                     type='password'
                                     label='New Password'

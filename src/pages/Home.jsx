@@ -8,6 +8,7 @@ import nineMobile from "../assets/images/9mobile.jpg";
 import SectionTestimonial from "../components/SectionTestimonial";
 import { useState } from "react";
 import providers from './../assets/images/providers.png'
+import { useNavigate } from "react-router-dom";
 
 const cableProviders = [
   { name: 'DSTV', plans: ['Premium', 'Compact+', 'Compact', 'Yanga'] },
@@ -49,6 +50,7 @@ const networks = [
 const Home = () => {
 
   const [selectedNetwork, setSelectedNetwork] = useState('MTN');
+  const navigate = useNavigate()
 
   return (
     <div>
@@ -256,8 +258,8 @@ const Home = () => {
                       key={pIndex}
                       className="flex justify-between items-center py-3 border-b border-gray-100 last:border-0"
                     >
-                      <span className="text-gray-700 font-medium">{plan}</span>
-                      <button className="px-4 py-2 bg-purple-600 text-white text-sm font-semibold rounded-lg hover:bg-purple-700 transition-colors">
+                      <span className="text-gray-700 font-medium cursor-pointer">{plan}</span>
+                      <button onClick={()=>navigate('/signup')} className="px-4 py-2 bg-purple-600 text-white text-sm font-semibold rounded-lg hover:bg-purple-700 transition-colors">
                         Subscribe
                       </button>
                     </div>

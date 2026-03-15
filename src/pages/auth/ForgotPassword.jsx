@@ -24,7 +24,7 @@ export default function ForgotPassword() {
         setFormData({ ...formData, [name]: value });
     }
 
-    const navigate = useNavigate();
+    //const navigate = useNavigate();
 
     // Prevent scrolling on desktop
     useEffect(() => {
@@ -43,12 +43,12 @@ export default function ForgotPassword() {
         setSuccess('');
 
         try {
-            const response = await axios.post('api/v1/users/forgot-password', formData);
+            const response = await axios.post('api/v1/users/forgotPassword', formData);
             if (response.data.status === 'success') {
-                setSuccess(`A password reset token has been sent to ${email}`);
-                setTimeout(() => {
-                    navigate('/password-reset', { state: { email } });
-                }, 2500);
+                setSuccess(`A password reset token has been sent to ${formData.email}`);
+                // setTimeout(() => {
+                //     navigate('/password-reset', { state: { email:formData.email } });
+                // }, 2500);
             }
         } catch (err) {
             if (err.response && err.response.data.message) {
@@ -56,6 +56,8 @@ export default function ForgotPassword() {
             } else {
                 setError('No response received from the server.');
             }
+            console.log(err);
+            
         } finally {
             setProcessing(false);
         }

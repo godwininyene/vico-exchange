@@ -15,47 +15,50 @@ import {
 import { BsCurrencyExchange } from "react-icons/bs";
 import axios from "../../lib/axios";
 import { useEffect, useState } from "react";
-import Transaction from "../../components/Transaction";
 import VtuTransaction from "../../components/VtuTransaction";
 import SectionContainer from "../../components/SectionContainer";
 import { Link } from "react-router-dom";
-import StatCard from "../../components/StatCard";
 import UserQuickAction from "../../components/UserQuickAction";
 import { toast } from "react-toastify";
 import EmptyMessage from "../../components/EmptyMessage";
 import Loader from "../../components/Loader";
 import { BiCopy } from "react-icons/bi";
+import Modal from "../../components/Modal";
+import InputField from "../../components/InputField";
 
 const Dashboard = () => {
   const [recentTransactions, setRecentTransactions] = useState([]);
   const [recentVtuTransactions, setRecentVtuTransactions] = useState([]);
   const [accountBalance, setAccountBalance] = useState(0);
   const [vtuBalance, setVtuBalance] = useState("₦0.00");
-  const user = JSON.parse(localStorage.getItem('user'));
+  const user = JSON.parse(localStorage.getItem("user"));
+
   const [loading, setLoading] = useState(false);
   const [loadingRecent, setLoadingRecent] = useState(false);
-  const [fetched, setFetched] = useState(false);
+  const [loadingAccount, setLoadingAccount] = useState(false);
 
   const [virtualAccount, setVirtualAccount] = useState(null);
-  const [loadingAccount, setLoadingAccount] = useState(false);
-  const [showTip, setShowTip] = useState(false);
+
+  const [showAccountModal, setShowAccountModal] = useState(false);
+  const [generatingAccount, setGeneratingAccount] = useState(false);
+
+  const [bvn, setBvn] = useState("");
+  const [nin, setNin] = useState("");
+  const [backendError, setBackendError] = useState("");
 
   const reffid = useRef();
 
   const copyReffLink = () => {
-    setShowTip(true);
     reffid.current.select();
     navigator.clipboard.writeText(reffid.current.value);
-  }
+    toast.success("Copied to clipboard!");
+  };
 
-  const [stats, setStats] = useState([
-    { title: "VTU Wallet Balance", value: "₦0.00", change: "0%", icon: <FiActivity size={24} /> },
-    { title: "Total Assets", value: "$0.00", change: "0%", icon: <FiDollarSign size={24} /> },
-    { title: "Crypto Holdings", value: "$0.00", change: "0%", icon: <BsCurrencyExchange size={24} /> },
-    { title: "Gift Card Balance", value: "$0.00", change: "0%", icon: <FiCreditCard size={24} /> },
-
-    { title: "Monthly Growth", value: "$0.00", change: "0%", icon: <FiTrendingUp size={24} /> },
-  ]);
+  const copyAccountNumber = () => {
+    if (!virtualAccount?.accountNumber) return;
+    navigator.clipboard.writeText(virtualAccount.accountNumber);
+    toast.success("Account number copied!");
+  };
 
   const fetchRecentTransactions = async () => {
     setLoadingRecent(true);
@@ -64,7 +67,7 @@ const Dashboard = () => {
       if (res.data.status === "success") {
         setRecentTransactions(res.data.data.transactions || []);
       }
-    } catch (err) {
+    } catch {
       toast.error("Failed to fetch recent transactions");
     } finally {
       setLoadingRecent(false);
@@ -112,14 +115,10 @@ const Dashboard = () => {
           };
         });
 
-        setStats(formattedStats);
-        setFetched(true);
         setRecentVtuTransactions(res.data.data.recentVtuTransactions || []);
       }
     } catch (error) {
       toast.error("Failed to fetch dashboard statistics");
-      console.log('STATS ERROR:', error);
-
     } finally {
       setLoading(false);
     }
@@ -127,139 +126,266 @@ const Dashboard = () => {
 
   const fetchVirtualAccount = async () => {
     setLoadingAccount(true);
+
     try {
-      const res = await axios.get("api/v1/wallet/virtual-account");
+      const res = await axios.get("api/v1/virtual-accounts");
+
       if (res.data.status === "success") {
         setVirtualAccount(res.data.data.account);
       }
-    } catch (error) {
-      toast.error("Failed to load funding account");
+    } catch {
+      console.log("No virtual account yet");
     } finally {
       setLoadingAccount(false);
     }
   };
 
-  const copyAccountNumber = () => {
-    if (!virtualAccount?.accountNumber) return;
-    navigator.clipboard.writeText(virtualAccount.accountNumber);
-    toast.success("Account number copied!");
+  const generateVirtualAccount = async () => {
+
+    setBackendError("");
+
+    if (!bvn && !nin) {
+      setBackendError("Please enter either your BVN or NIN");
+      return;
+    }
+
+    setGeneratingAccount(true);
+
+    try {
+
+      const payload = {};
+
+      if (bvn) payload.bvn = bvn.trim();
+      if (nin) payload.nin = nin.trim();
+
+      const res = await axios.post("api/v1/virtual-accounts", payload);
+
+      if (res.data.status === "success") {
+
+        setVirtualAccount(res.data.data);
+
+        toast.success("Funding account generated successfully");
+
+        setShowAccountModal(false);
+
+        setBvn("");
+        setNin("");
+      }
+
+    } catch (error) {
+
+      const message =
+        error.response?.data?.message ||
+        "Failed to generate funding account";
+
+      setBackendError(message);
+      toast.error(message)
+
+    } finally {
+      setGeneratingAccount(false);
+    }
   };
 
   useEffect(() => {
     fetchRecentTransactions();
     fetchStats();
-    //fetchVirtualAccount();
+    fetchVirtualAccount();
   }, []);
-
 
   return (
     <div className="pb-10">
 
-      {/* Hero */}
       <div className="relative rounded-tl-2xl rounded-tr-2xl bg-gradient-to-r from-primary-dark to-primary-light text-white pt-8 pb-16">
         <div className="container mx-auto px-4">
           <div className="rounded-t-3xl bg-white dark:bg-gray-900 pt-6 pb-8 px-6 shadow-lg">
-            <h1 className="text-2xl font-bold mb-2 text-gray-800 dark:text-white">Welcome Back, {user.firstName}!</h1>
-            <p className="text-gray-500 mb-6">Here's your financial overview</p>
+
+            <h1 className="text-2xl font-bold mb-2 text-gray-800 dark:text-white">
+              Welcome Back, {user.firstName}!
+            </h1>
+
+            <p className="text-gray-500 mb-6">
+              Here's your financial overview
+            </p>
 
             <div className="my-4">
-              <label className="block text-sm text-gray-600 dark:text-gray-400">Referral Link</label>
+              <label className="block text-sm text-gray-600 dark:text-gray-400">
+                Referral Link
+              </label>
+
               <div className="flex items-center mt-1">
                 <input
                   type="text"
                   ref={reffid}
                   readOnly
                   value={`${import.meta.env.VITE_APP_URL}/signup?refid=${user.accountId}`}
-                  className="flex-1 min-w-0 p-2 rounded-l-lg border border-gray-300 dark:border-slate-700 dark:bg-slate-700 text-gray-800 d dark:text-white truncate focus:outline-0 focus:border-primary-light"
+                  className="flex-1 p-2 rounded-l-lg border border-gray-300 dark:border-slate-700 dark:bg-slate-700 text-gray-800 dark:text-white"
                 />
+
                 <button
                   onClick={copyReffLink}
-                  className="p-2 bg-primary-light cursor-pointer text-white rounded-r-lg hover:bg-primary-dark transition-colors"
+                  className="p-2 bg-primary-light text-white rounded-r-lg"
                 >
                   <BiCopy className="w-6 h-6" />
-
                 </button>
               </div>
-              {showTip && (
-                <div className="text-sm text-green-600 mt-1">Copied to clipboard!</div>
-              )}
             </div>
 
-            <div className="grid md:grid-cols-2 gap-4 ">
+            <div className="grid md:grid-cols-2 gap-4">
               <div className="bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-2xl p-6 shadow-lg">
                 <p className="text-emerald-100">Wallet Balance</p>
-                <h2 className="text-3xl font-bold text-white">{vtuBalance}</h2>
+                <h2 className="text-3xl font-bold text-white">
+                  {vtuBalance}
+                </h2>
               </div>
-
-              {/* <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl p-6 shadow-lg">
-                <p className="text-blue-100">Total Assets (Crypto & Gift cards)</p>
-                <h2 className="text-3xl font-bold text-white">{accountBalance}</h2>
-              </div> */}
             </div>
 
+            <div className="mt-6 bg-gray-50 dark:bg-gray-800 rounded-xl p-4 border">
 
+              <h3 className="font-semibold mb-2 text-gray-800 dark:text-gray-100">
+                Fund Your VTU Wallet
+              </h3>
 
-            {/* Virtual Account */}
-            {/* <div className="mt-6 bg-gray-50 dark:bg-gray-800 rounded-xl p-5 border">
-              <h3 className="font-semibold mb-2">Fund Your VTU Wallet</h3>
               {loadingAccount ? (
                 <Loader size={6} />
               ) : virtualAccount ? (
-                <div className="flex flex-wrap justify-between gap-4">
-                  <div>
-                    <p className="text-sm text-gray-500">Bank</p>
-                    <p className="font-medium">{virtualAccount.bankName}</p>
+                <>
+                  {/* Show funding notice with VTU charge */}
+                  <p className="text-xs text-gray-600 dark:text-gray-400 mb-2">
+                    Transfer to this account to fund your wallet instantly (₦50 charge applies).
+                  </p>
 
-                    <p className="text-sm text-gray-500 mt-2">Account Number</p>
-                    <p className="font-semibold text-lg">{virtualAccount.accountNumber}</p>
+                  <p className="text-xs text-gray-600 dark:text-gray-400 mb-4">
+                    Your wallet will be funded automatically once the payment is confirmed.
+                  </p>
 
-                    <p className="text-sm text-gray-500 mt-2">Account Name</p>
-                    <p className="font-medium">{virtualAccount.accountName}</p>
+                  <div className="space-y-3">
+
+                    <div>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">Bank</p>
+                      <p className="font-medium text-sm text-gray-800 dark:text-gray-200">
+                        {virtualAccount.bankName}
+                      </p>
+                    </div>
+
+                    <div>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">
+                        Account Number
+                      </p>
+
+                      <div className="flex items-center justify-between bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2">
+                        <p className="font-semibold tracking-wide text-gray-900 dark:text-gray-100">
+                          {virtualAccount.accountNumber}
+                        </p>
+
+                        <button
+                          onClick={copyAccountNumber}
+                          className="flex items-center gap-1 text-primary-dark text-sm font-medium"
+                        >
+                          <FiCopy size={16} />
+                          Copy
+                        </button>
+                      </div>
+                    </div>
+
+                    <div>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">Account Name</p>
+                      <p className="font-medium text-sm text-gray-800 dark:text-gray-200">
+                        {virtualAccount.accountName}
+                      </p>
+                    </div>
+
                   </div>
+                </>
+              ) : (
+                <div className="text-center py-3">
+                  <p className="text-gray-600 dark:text-gray-400 text-sm mb-3">
+                    You don't have a funding account yet
+                  </p>
 
                   <button
-                    onClick={copyAccountNumber}
-                    className="flex items-center gap-2 bg-primary-dark text-white px-4 py-2 rounded-lg"
+                    onClick={() => setShowAccountModal(true)}
+                    className="bg-primary-dark text-white px-4 py-2 rounded-lg text-sm"
                   >
-                    <FiCopy /> Copy
+                    Generate Funding Account
                   </button>
                 </div>
-              ) : (
-                <EmptyMessage message="No funding account available" />
               )}
-            </div> */}
+
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Stats  */}
-      {/* <div className="container mx-auto px-4 -mt-5 relative z-10">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {stats.map((stat, index) => (
-            <StatCard stat={stat} key={index} loading={loading && !fetched} />
-          ))}
-        </div>
-      </div> */}
+      <Modal
+        isOpen={showAccountModal}
+        closeModal={() => setShowAccountModal(false)}
+        header="Generate Funding Account"
+      >
+        <div className="p-6">
 
-      {/* Quick Actions */}
+          <p className="text-gray-600 mb-2">
+            To generate your dedicated bank account for funding your wallet,
+            we are required by banking regulations to verify your identity.
+          </p>
+
+          <p className="text-sm text-gray-500 mb-6">
+            Please provide <span className="font-semibold">BVN OR NIN</span>.
+            You only need to enter <span className="font-semibold">one</span> of them.
+          </p>
+
+          <InputField
+            label="BVN"
+            name="bvn"
+            placeholder="Enter your BVN"
+            value={bvn}
+            onChange={(e) => setBvn(e.target.value)}
+          />
+
+          <p className="text-center text-gray-400 my-3 font-medium">OR</p>
+
+          <InputField
+            label="NIN"
+            name="nin"
+            placeholder="Enter your NIN"
+            value={nin}
+            onChange={(e) => setNin(e.target.value)}
+          />
+
+          <p className="text-xs text-gray-400 mt-2 mb-4">
+            Your information is securely encrypted and used only for identity verification.
+          </p>
+
+          {backendError && (
+            <p className="text-red-500 text-sm mb-3">
+              {backendError}
+            </p>
+          )}
+
+          <button
+            onClick={generateVirtualAccount}
+            disabled={generatingAccount}
+            className="w-full bg-primary-dark text-white py-3 rounded-lg"
+          >
+            {generatingAccount ? "Generating..." : "Generate Account"}
+          </button>
+
+        </div>
+      </Modal>
+
       <div className="container mx-auto px-4 mt-10">
         <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-6">
           Quick Actions
         </h2>
+
         <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
           <UserQuickAction Icon={FiWifi} label="Buy Data" url="/user/buy-data" color="indigo" />
           <UserQuickAction Icon={FiPhoneCall} label="Buy Airtime" url="/user/buy-airtime" color="red" />
           <UserQuickAction Icon={FiZap} label="Electricity" url="/user/buy-electricity-token" color="yellow" />
           <UserQuickAction Icon={FiTv} label="Cable TV" url="/user/buy-cable-tv" color="purple" />
           <UserQuickAction Icon={FiBookOpen} label="Education Pins" url="/user/education" color="green" />
-          {/* <UserQuickAction Icon={FiDollarSign} label="Sell Gift Card" url="/user/sell-giftcard" color="blue" />
-          <UserQuickAction Icon={BsCurrencyExchange} label="Buy Crypto" url="/user/buy-crypto" color="green" />
-          <UserQuickAction Icon={FiCreditCard} label="Buy Gift Card" url="/user/buy-giftcard" color="purple" />
-          <UserQuickAction Icon={FiTrendingUp} label="Sell Crypto" url="/user/sell-crypto" color="orange" /> */}
         </div>
       </div>
 
-      {/* VTU Transactions */}
       <div className="container mx-auto px-4 mt-10">
         <SectionContainer
           title="Recent Transactions"
@@ -280,34 +406,6 @@ const Dashboard = () => {
           )}
         </SectionContainer>
       </div>
-
-      {/* Crypto & Gift Card Transactions */}
-      {/* <div className="container mx-auto px-4 mt-10">
-        <SectionContainer
-          title="Recent Crypto & Gift Card Transactions"
-          actionButton={
-            <Link to="/user/transactions" className="text-sm text-primary-dark hover:underline">
-              View All
-            </Link>
-          }
-        >
-          {loadingRecent ? (
-            <Loader size={8} />
-          ) : recentTransactions.length ? (
-            recentTransactions.map((transaction) => (
-              <Transaction
-                key={transaction.id}
-                transaction={transaction}
-                variant="dashboard"
-                context="user"
-              />
-            ))
-          ) : (
-            <EmptyMessage message="No recent transactions found" />
-          )}
-        </SectionContainer>
-      </div> */}
-
 
     </div>
   );
