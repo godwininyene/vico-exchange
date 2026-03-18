@@ -1,10 +1,9 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { FiArrowLeft } from "react-icons/fi";
 import axios from "../../lib/axios";
 import { toast } from "react-toastify";
 import ProgressStepper from "../../components/ProgressStepper";
-import Loader from "../../components/Loader";
 
 import abuja from "./../../assets/images/electricity/abuja.png";
 import aba from "./../../assets/images/electricity/aba.png";
@@ -35,8 +34,6 @@ const BuyElectricity = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [transaction, setTransaction] = useState(null);
 
-  const [discos, setDiscos] = useState([]);
-  const [loading, setLoading] = useState(true);
 
   const steps = [
     { id: "select", name: "Select Disco" },
@@ -45,53 +42,21 @@ const BuyElectricity = () => {
     { id: "confirmation", name: "Confirmation" },
   ];
 
-  // Map backend identifiers to logos
-  const discoLogos = {
-    "aba-electric": aba,
-    "abuja-electric": abuja,
-    "benin-electric": benin,
-    "eko-electric": eko,
-    "enugu-electric": enugu,
-    "ibadan-electric": ibadan,
-    "ikeja-electric": ikeja,
-    "jos-electric": jos,
-    "kaduna-electric": kaduna,
-    "kano-electric": kano,
-    "portharcourt-electric": portharcourt,
-    "yola-electric": yola,
-  };
+  const discos = [
+    { name: "Aba (ABEDC/APL)", logo: aba, identifier: "aba-electric" },
+    { name: "Abuja (AEDC)", logo: abuja, identifier: "abuja-electric" },
+    { name: "Benin (BEDC)", logo: benin, identifier: "benin-electric" },
+    { name: "Eko (EKEDC)", logo: eko, identifier: "eko-electric" },
+    { name: "Enugu (EEDC)", logo: enugu, identifier: "enugu-electric" },
+    { name: "Ibadan (IBEDC)", logo: ibadan, identifier: "ibadan-electric" },
+    { name: "Ikeja (IKEDC)", logo: ikeja, identifier: "ikeja-electric" },
+    { name: "Jos (JEDC)", logo: jos, identifier: "jos-electric" },
+    { name: "Kaduna (KAEDCO)", logo: kaduna, identifier: "kaduna-electric" },
+    { name: "Kano (KEDCO)", logo: kano, identifier: "kano-electric" },
+    { name: "Port Harcourt (PHED)", logo: portharcourt, identifier: "portharcourt-electric" },
+    { name: "Yola (YEDC)", logo: yola, identifier: "yola-electric" },
+  ];
 
-  const fetchDiscos = async () => {
-    try {
-      setLoading(true);
-
-      const res = await axios.get("/api/v1/electricity/plans");
-
-      if (res.data.status === "success") {
-        const backendPlans = res.data.data.plans;
-
-        const formattedDiscos = backendPlans
-          .map((plan) => ({
-            name: plan.plan_name,
-            identifier: plan.plan_id,
-            logo: discoLogos[plan.plan_id],
-            min_amount: plan.min_amount,
-            max_amount: plan.max_amount,
-          }))
-          .sort((a, b) => a.name.localeCompare(b.name));
-
-        setDiscos(formattedDiscos);
-      }
-    } catch (err) {
-      toast.error("Discos not available. Please check back later");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchDiscos();
-  }, []);
 
   const handleDiscoSelect = (disco) => {
     setSelectedDisco(disco);
@@ -121,12 +86,14 @@ const BuyElectricity = () => {
 
   const handlePaymentConfirmation = async () => {
     setIsSubmitting(true);
+
     const payload = {
-      meter:meterNumber,
-      plan:selectedDisco.identifier,
-      amount:Number(amount),
-      type:meterType,
-      phone:phoneNumber
+      serviceID: selectedDisco.identifier,
+      phone: phoneNumber,
+      customerID: meterNumber,
+      amount: Number(amount),
+      variation_code: meterType,
+      requestId: uuidv4(),
     };
 
     try {
@@ -170,27 +137,15 @@ const BuyElectricity = () => {
         </button>
       )}
 
-      {/* SELECT DISCO */}
       {stage === "select" && (
-        <>
-          {loading ? (
-            <div className="mt-6">
-              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm overflow-hidden min-h-96 flex items-center justify-center">
-                <Loader size={8} />
-              </div>
-            </div>
-          ) : (
-            <DataNetworkSelectionStage
-              networks={discos}
-              onNetworkSelect={handleDiscoSelect}
-              title="Buy Electricity Token"
-              description="Choose your electricity distribution company"
-            />
-          )}
-        </>
+        <DataNetworkSelectionStage
+          networks={discos}
+          onNetworkSelect={handleDiscoSelect}
+          title="Buy Electricity Token"
+          description="Choose your electricity distribution company"
+        />
       )}
 
-      {/* FORM */}
       {stage === "form" && selectedDisco && (
         <ElectricityFormStage
           selectedDisco={selectedDisco}
@@ -206,7 +161,6 @@ const BuyElectricity = () => {
         />
       )}
 
-      {/* PAYMENT */}
       {stage === "payment" && selectedDisco && (
         <VtuPaymentStage
           selectedProvider={selectedDisco}
@@ -221,7 +175,6 @@ const BuyElectricity = () => {
         />
       )}
 
-      {/* CONFIRMATION */}
       {stage === "confirmation" && (
         <VtuConfirmationStage
           serviceType="electricity"
