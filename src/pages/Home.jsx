@@ -239,7 +239,7 @@ const Home = () => {
 
           </div>
 
-        
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {cableProviders.map((provider, index) => (
               <div
@@ -259,7 +259,7 @@ const Home = () => {
                       className="flex justify-between items-center py-3 border-b border-gray-100 last:border-0"
                     >
                       <span className="text-gray-700 font-medium cursor-pointer">{plan}</span>
-                      <button onClick={()=>navigate('/signup')} className="px-4 py-2 bg-purple-600 text-white text-sm font-semibold rounded-lg hover:bg-purple-700 transition-colors">
+                      <button onClick={() => navigate('/signup')} className="px-4 py-2 bg-purple-600 text-white text-sm font-semibold rounded-lg hover:bg-purple-700 transition-colors">
                         Subscribe
                       </button>
                     </div>
@@ -347,21 +347,29 @@ const Home = () => {
 
       {/* SEO BOOST CONTENT */}
       <section className="py-12 bg-gray-50">
-
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-4 text-center">
 
           <h2 className="text-2xl font-bold mb-4">
             Buy Cheap Data & Airtime Online in Nigeria
           </h2>
 
-          <p className="text-gray-600 leading-relaxed">
+          <p className="text-gray-600 leading-relaxed max-w-3xl mx-auto mb-6">
             Winsubz is a reliable VTU platform in Nigeria where users can buy cheap MTN data,
             Airtel data, Glo data and 9mobile data instantly. You can also recharge airtime,
             pay electricity bills and subscribe to DSTV, GOTV and Startimes easily.
           </p>
 
-        </div>
+          {/* WhatsApp CTA */}
+          <a
+            href="https://chat.whatsapp.com/DexrJXiayOO0yPZx0zsoKu"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-block bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-3 rounded-lg shadow-md transition-all duration-300 hover:scale-105"
+          >
+            Join Our WhatsApp Channel for Updates 🚀
+          </a>
 
+        </div>
       </section>
 
 

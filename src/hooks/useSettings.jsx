@@ -5,8 +5,8 @@ import { toast } from "react-toastify";
 // Default fallback settings
 const DEFAULT_SETTINGS = {
   platformName: "Winsubz",
-  adminEmail: "noblegodwin02@gmail.com",
-  supportEmail: "godwinhigh2@gmail.com",
+  adminEmail: "winsubz@winsubz.com",
+  supportEmail: "winsubz@winsubz.com",
   supportPhone: "08144098649",
   defaultCurrency: "NGN",
   maintenanceMode: false,

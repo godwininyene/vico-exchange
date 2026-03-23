@@ -23,19 +23,20 @@ const Users = () => {
   const [updating, setUpdating] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [loading, setLoading] = useState(false); // Add loading state
+  
 
   // Fetch users with filters
   const fetchUsers = async (page = 1, search = '', status = '') => {
     setLoading(true); // Set loading to true when fetching starts
     let url = `api/v1/users?page=${page}&limit=${pagination.perPage}`;
-    
+
     if (search) {
       url += `&search=${search}`;
     }
     if (status && status !== 'all') {
       url += `&status=${status}`;
     }
-    
+
     try {
       const res = await axios.get(url);
       if (res.data.status === 'success') {
@@ -46,7 +47,7 @@ const Users = () => {
           totalItems: res.data.pagination.totalItems
         });
       }
-      
+
     } catch (err) {
       console.log(err);
       toast.error('Failed to fetch users');
@@ -103,7 +104,7 @@ const Users = () => {
   // Delete user function
   const deleteUser = async () => {
     if (!selectedUser) return;
-    
+
     if (!window.confirm(`Are you sure you want to delete ${selectedUser.firstName}? This action cannot be undone.`)) {
       return;
     }
@@ -111,7 +112,7 @@ const Users = () => {
     try {
       setIsDeleting(true);
       const res = await axios.delete(`api/v1/users/${selectedUser.id}`);
-      
+
       if (res.status === 204) {
         toast.success('User deleted successfully!');
         // Refresh the users list
@@ -120,19 +121,29 @@ const Users = () => {
           searchQuery,
           statusFilter === 'all' ? '' : statusFilter,
         );
-        
+
         closeUserModal();
       }
     } catch (error) {
       console.error('Delete user error:', error);
       toast.error(
-        error.response?.data?.message || 
-        error.response?.data?.error || 
+        error.response?.data?.message ||
+        error.response?.data?.error ||
         'Failed to delete user. Please try again.'
       );
     } finally {
       setIsDeleting(false);
     }
+  };
+
+  const handlePageChange = (page) => {
+    fetchTransactions(
+      page, 
+      searchQuery, 
+      statusFilter === 'all' ? '' : statusFilter,
+      assetFilter === 'all' ? '' : assetFilter,
+      transactionTypeFilter === 'all' ? '' : transactionTypeFilter
+    );
   };
 
   return (
@@ -193,6 +204,8 @@ const Users = () => {
         <UsersList
           users={users}
           onOpenUserDetails={openUserDetails}
+          pagination={pagination}
+          onPageChange={handlePageChange}
         />
       )}
     </div>
