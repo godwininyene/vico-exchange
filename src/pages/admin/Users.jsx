@@ -22,37 +22,39 @@ const Users = () => {
   const debouncedSearchQuery = useDebounce(searchQuery, 500);
   const [updating, setUpdating] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [loading, setLoading] = useState(false); // Add loading state
-  
+  const [loading, setLoading] = useState(false);
 
   // Fetch users with filters
   const fetchUsers = async (page = 1, search = '', status = '') => {
-    setLoading(true); // Set loading to true when fetching starts
+    setLoading(true);
+
     let url = `api/v1/users?page=${page}&limit=${pagination.perPage}`;
 
     if (search) {
       url += `&search=${search}`;
     }
+
     if (status && status !== 'all') {
       url += `&status=${status}`;
     }
 
     try {
       const res = await axios.get(url);
+
       if (res.data.status === 'success') {
         setUsers(res.data.data.users);
+
         updatePagination({
           currentPage: res.data.pagination.currentPage,
           totalPages: res.data.pagination.totalPages,
           totalItems: res.data.pagination.totalItems
         });
       }
-
     } catch (err) {
-      console.log(err);
+      console.error(err);
       toast.error('Failed to fetch users');
     } finally {
-      setLoading(false); // Set loading to false when done
+      setLoading(false);
     }
   };
 
@@ -61,7 +63,7 @@ const Users = () => {
     fetchUsers(
       1,
       debouncedSearchQuery,
-      statusFilter === 'all' ? '' : statusFilter,
+      statusFilter === 'all' ? '' : statusFilter
     );
   }, [statusFilter, debouncedSearchQuery]);
 
@@ -80,16 +82,19 @@ const Users = () => {
   // Update user's status
   const updateAccountStatus = async (status, user) => {
     if (!window.confirm(`Are you sure you want to ${status} this account?`)) return;
+
     try {
       setUpdating(true);
+
       const res = await axios.patch(`api/v1/users/${user.id}/status`, { status });
+
       if (res.data.status === 'success') {
-        // Refresh the list after successful operation
         await fetchUsers(
-          1,
+          pagination.currentPage,
           searchQuery,
-          statusFilter === 'all' ? '' : statusFilter,
+          statusFilter === 'all' ? '' : statusFilter
         );
+
         toast.success(`User's status changed successfully!`);
       }
     } catch (error) {
@@ -111,15 +116,16 @@ const Users = () => {
 
     try {
       setIsDeleting(true);
+
       const res = await axios.delete(`api/v1/users/${selectedUser.id}`);
 
       if (res.status === 204) {
         toast.success('User deleted successfully!');
-        // Refresh the users list
+
         await fetchUsers(
-          1,
+          pagination.currentPage,
           searchQuery,
-          statusFilter === 'all' ? '' : statusFilter,
+          statusFilter === 'all' ? '' : statusFilter
         );
 
         closeUserModal();
@@ -136,13 +142,12 @@ const Users = () => {
     }
   };
 
+  // ✅ FIXED: Correct pagination handler
   const handlePageChange = (page) => {
-    fetchTransactions(
-      page, 
-      searchQuery, 
-      statusFilter === 'all' ? '' : statusFilter,
-      assetFilter === 'all' ? '' : assetFilter,
-      transactionTypeFilter === 'all' ? '' : transactionTypeFilter
+    fetchUsers(
+      page,
+      searchQuery,
+      statusFilter === 'all' ? '' : statusFilter
     );
   };
 
@@ -165,7 +170,7 @@ const Users = () => {
         </Modal>
       )}
 
-      {/* Header and Actions */}
+      {/* Header */}
       <PageHeader
         primaryHeader={"User Management"}
         secondaryHeader={"View and manage all registered users"}
