@@ -7,17 +7,18 @@ import Button from '../../components/Button';
 import { FiLogIn } from "react-icons/fi";
 import { useSearchParams, useNavigate, useLocation } from 'react-router-dom';
 import axios from '../../lib/axios';
+import OneSignal from 'react-onesignal';
 
 export default function Login() {
-    const [searchParams] = useSearchParams(); 
+    const [searchParams] = useSearchParams();
     const location = useLocation();
     let pathname = searchParams.get("redirectTo") || null;
-    
+
     // Get message from URL search params OR from navigation state
     const searchParamMessage = searchParams.get("message") || null;
     const stateMessage = location.state?.message || null;
     const message = stateMessage || searchParamMessage;
-    
+
     const [processing, setProcessing] = useState(false);
     const [error, setError] = useState();
 
@@ -27,12 +28,12 @@ export default function Login() {
     });
 
     const handleChange = e => {
-        const {name, value} = e.target;
-        setFormData({...formData, [name]: value});
+        const { name, value } = e.target;
+        setFormData({ ...formData, [name]: value });
     }
 
     const navigate = useNavigate();
-    
+
     // Prevent scrolling on desktop
     useEffect(() => {
         if (window.innerWidth >= 768) {
@@ -42,39 +43,102 @@ export default function Login() {
             };
         }
     }, []);
-    
-    const handleSubmit = async(e) => {
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        let goTo;
         setProcessing(true);
-        
+        setError(null); // Clear previous errors
+
         try {
             const response = await axios.post('api/v1/users/login', formData);
-            if(response.data.status == 'success'){
-                localStorage.setItem("user", JSON.stringify(response.data.data.user));
-                if(response.data.data.user.role === 'user'){
-                    goTo = pathname || '/user/dashboard';
+
+            if (response.data.status === 'success') {
+                const loggedInUser = response.data.data.user;
+
+                // 1. Persist user data locally
+                localStorage.setItem("user", JSON.stringify(loggedInUser));
+
+                // 2. Determine where the user is going
+                let goTo = pathname;
+                if (!goTo) {
+                    goTo = loggedInUser.role === 'admin' ? '/admin/dashboard' : '/user/dashboard';
                 }
-                if(response.data.data.user.role === 'admin'){
-                    goTo = pathname || '/admin/dashboard';
+
+                // 3. Update OneSignal in the background (Non-blocking)
+                // This prevents the UI from "hanging" if the OneSignal API is slow.
+                if (typeof window !== "undefined" && window.OneSignal) {
+                    OneSignal.login(String(loggedInUser.id))
+                        .then(() => {
+                            return OneSignal.User.addTags({
+                                email: loggedInUser.email,
+                                name: `${loggedInUser.firstName} ${loggedInUser.lastName}`,
+                                role: loggedInUser.role,
+                                last_login: new Date().toISOString(),
+                            });
+                        })
+                        .catch((osError) => {
+                            console.error("OneSignal Background Update Failed:", osError);
+                        });
                 }
+
+                // 4. Navigate immediately to provide a snappy UX
                 navigate(goTo);
             }
         } catch (err) {
-            if (err.response && err.response.data.message) {
-                setError(err.response.data.message);
-            } else {
-                setError('No response received from the server.');
-            }
+            // Robust error handling
+            const message = err.response?.data?.message || 'Authentication failed. Please check your connection.';
+            setError(message);
+            console.error("Login Error:", err);
         } finally {
             setProcessing(false);
         }
     };
 
+    // const handleSubmit = async (e) => {
+    //     e.preventDefault();
+    //     let goTo;
+    //     setProcessing(true);
+
+    //     try {
+    //         const response = await axios.post('api/v1/users/login', formData);
+    //         if (response.data.status == 'success') {
+    //             const loggedInUser = response.data.data.user;
+
+    //             localStorage.setItem("user", JSON.stringify(loggedInUser));
+
+    //             // Identify user in OneSignal
+    //             await OneSignal.login(String(loggedInUser.id));
+
+    //             // OPTIONAL: add extra user info
+    //             await OneSignal.User.addTags({
+    //                 email: loggedInUser.email,
+    //                 name: loggedInUser.firstName + " " + loggedInUser.lastName,
+    //             });
+
+    //             if (loggedInUser.role === 'user') {
+    //                 goTo = pathname || '/user/dashboard';
+    //             }
+    //             if (loggedInUser.role === 'admin') {
+    //                 goTo = pathname || '/admin/dashboard';
+    //             }
+
+    //             navigate(goTo);
+    //         }
+    //     } catch (err) {
+    //         if (err.response && err.response.data.message) {
+    //             setError(err.response.data.message);
+    //         } else {
+    //             setError('No response received from the server.');
+    //         }
+    //     } finally {
+    //         setProcessing(false);
+    //     }
+    // };
+
     return (
         <>
             {/* Left hand content Start */}
-            <div className="hidden md:block bg-cover bg-center" style={{backgroundImage: `url(${bg})`}}>
+            <div className="hidden md:block bg-cover bg-center" style={{ backgroundImage: `url(${bg})` }}>
                 <div className="h-full bg-gradient-to-b from-[#000000ec] via-[#000000b9] to-[#000000b9] bg-opacity-20 text-primary">
                     <div className='h-full'>
                         <div className='text-center px-10 flex flex-col justify-center items-center h-full'>
@@ -84,7 +148,7 @@ export default function Login() {
                                     Winsubz
                                 </span>
                             </Link>
-                           
+
                             {/* <h1 className='text-white text-3xl font-black pt-5'>
                                 Trade Crypto & Gift Cards. Buy Airtime & Cheap Data — Instantly.
                             </h1>
@@ -123,19 +187,19 @@ export default function Login() {
                         <div className='px-4 py-6 md:p-10 bg-white dark:bg-slate-800 rounded-lg shadow-lg'>
                             <h3 className='font-bold text-2xl mb-1 dark:text-white'>Login</h3>
                             <p className='text-sm font-medium leading-[1.6] mb-8 dark:text-white'>Enter your login credentials to continue.</p>
-                            
+
                             {error && (
                                 <div className="mb-2 font-medium text-sm text-red-600 dark:text-red-400">
                                     {error}
                                 </div>
                             )}
-                            
+
                             {message && (
                                 <div className="mb-4 p-3 bg-green-50 text-green-700 dark:bg-green-900/20 dark:text-green-400 rounded-lg">
                                     {message}
                                 </div>
                             )}
-                            
+
                             <form onSubmit={handleSubmit}>
                                 <InputField
                                     type='email'
@@ -158,7 +222,7 @@ export default function Login() {
                                 />
 
                                 <div className='text-center'>
-                                    <Button 
+                                    <Button
                                         className='w-full'
                                         icon={<FiLogIn />}
                                         iconPosition='right'
@@ -169,13 +233,13 @@ export default function Login() {
                                         Login
                                     </Button>
                                 </div>
-                                
+
                                 <p className='inline-block text-sm text-right mt-2'>
                                     <Link to='/forgot-password' className='inline-block ml-1 text-blue-600 dark:text-blue-400'>
                                         Forgot your password?
                                     </Link>
                                 </p>
-                                
+
                                 <p className='block text-sm mt-2'>
                                     <Link to='/signup' className='inline-block ml-1 text-blue-600 dark:text-blue-400'>
                                         Don't have an Account? Register

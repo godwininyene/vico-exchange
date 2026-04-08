@@ -25,12 +25,14 @@ import Loader from "../../components/Loader";
 import { BiCopy } from "react-icons/bi";
 import Modal from "../../components/Modal";
 import InputField from "../../components/InputField";
+import OneSignal from "react-onesignal";
 
 const Dashboard = () => {
   const [recentTransactions, setRecentTransactions] = useState([]);
   const [recentVtuTransactions, setRecentVtuTransactions] = useState([]);
   const [accountBalance, setAccountBalance] = useState(0);
   const [vtuBalance, setVtuBalance] = useState("₦0.00");
+  const [referralBalance, setReferralBalance] = useState("₦0.00");
   const user = JSON.parse(localStorage.getItem("user"));
 
   const [loading, setLoading] = useState(false);
@@ -96,9 +98,9 @@ const Dashboard = () => {
               icon = <FiActivity size={24} />;
               setVtuBalance(stat.value);
               break;
-            case "Total Assets":
+            case "Referral Earnings":
               icon = <FiDollarSign size={24} />;
-              setAccountBalance(stat.value);
+              setReferralBalance(stat.value);
               break;
             case "Monthly Growth":
               icon = <FiTrendingUp size={24} />;
@@ -192,6 +194,30 @@ const Dashboard = () => {
     fetchVirtualAccount();
   }, []);
 
+  useEffect(() => {
+    const showPrompt = async () => {
+      // 1. Check if the SDK is available
+      if (!OneSignal) return;
+
+      // 2. Access the property (Getter) - no 'await' or '()' needed here
+      const currentPermission = OneSignal.Notifications.permission;
+
+      // 3. If they haven't granted permission yet, show the prompt
+      if (currentPermission !== "granted") {
+        try {
+          // 4. THE METHOD: promptPush IS a method and it IS asynchronous
+          await OneSignal.Slidedown.promptPush();
+        } catch (e) {
+          console.error("Slidedown failed to load", e);
+        }
+      }
+    };
+
+    const timer = setTimeout(showPrompt, 2000);
+    return () => clearTimeout(timer);
+  }, []);
+
+
   return (
     <div className="pb-10">
 
@@ -223,19 +249,22 @@ const Dashboard = () => {
 
                 <button
                   onClick={copyReffLink}
-                  className="p-2 bg-primary-light text-white rounded-r-lg"
+                  className="p-2 bg-primary-light text-white rounded-r-lg flex items-center"
                 >
-                  <BiCopy className="w-6 h-6" />
+                  <BiCopy className="w-6 h-6" />Copy
                 </button>
               </div>
             </div>
 
             <div className="grid md:grid-cols-2 gap-4">
               <div className="bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-2xl p-6 shadow-lg">
-                <p className="text-emerald-100">Wallet Balance</p>
-                <h2 className="text-3xl font-bold text-white">
-                  {vtuBalance}
-                </h2>
+                <p className="text-emerald-100">VTU Wallet Balance</p>
+                <h2 className="text-3xl font-bold text-white">{vtuBalance}</h2>
+              </div>
+
+              <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl p-6 shadow-lg">
+                <p className="text-blue-100">Referral Balance</p>
+                <h2 className="text-3xl font-bold text-white">{referralBalance}</h2>
               </div>
             </div>
 

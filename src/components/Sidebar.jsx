@@ -63,6 +63,8 @@ const Sidebar = ({ user, isOpen, onClose }) => {
     { name: "Buy Data", path: "/user/buy-data", icon: <FiWifi size={18} /> },
     { name: "Buy Airtime", path: "/user/buy-airtime", icon: <FiPhoneCall size={18} /> },
     { name: "Cable Subscription", path: "/user/buy-cable-tv", icon: <FiTv size={18} /> },
+    { name: "Referrals", path: "/user/referrals", icon: <FiUsers size={18} /> },
+
 
     // Trading
     // { name: "Buy Gift Cards", path: "/user/buy-giftcard", icon: <FiShoppingCart size={18} /> },
@@ -88,7 +90,7 @@ const Sidebar = ({ user, isOpen, onClose }) => {
   const admin_links = [
     { name: "Dashboard", path: "/admin/dashboard", icon: <FiHome size={18} /> },
     { name: "Users", path: "/admin/users", icon: <FiUsers size={18} /> },
-    
+
     // Admin Transactions Dropdown
     {
       name: "Transactions",
@@ -99,7 +101,7 @@ const Sidebar = ({ user, isOpen, onClose }) => {
         { name: "Trading Transactions", path: "/admin/transactions", icon: <FiShoppingCart size={18} /> }
       ]
     },
-    
+
     { name: "Gift Cards", path: "/admin/giftcards", icon: <FiDatabase size={18} /> },
     { name: "Coins", path: "/admin/coins", icon: <BsCoin size={18} /> },
     { name: "Settings", path: "/admin/settings", icon: <FiSettings size={18} /> },
@@ -110,7 +112,7 @@ const Sidebar = ({ user, isOpen, onClose }) => {
     return links.map((link) => {
       // If it's a dropdown
       if (link.type === "dropdown") {
-        const isActive = user?.role === "admin" 
+        const isActive = user?.role === "admin"
           ? isAdminTransactionActive()
           : isUserTransactionActive();
         const isOpen = user?.role === "admin" ? adminTransactionsOpen : transactionsOpen;
@@ -132,12 +134,12 @@ const Sidebar = ({ user, isOpen, onClose }) => {
                 <span className="mr-3">{link.icon}</span>
                 <span>{link.name}</span>
               </div>
-              <FiChevronDown 
-                className={`transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} 
+              <FiChevronDown
+                className={`transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
                 size={18}
               />
             </button>
-            
+
             {/* Dropdown Content */}
             {isOpen && (
               <div className="ml-4 space-y-1 mt-1">
@@ -163,7 +165,7 @@ const Sidebar = ({ user, isOpen, onClose }) => {
           </div>
         );
       }
-      
+
       // Regular link
       return (
         <NavLink

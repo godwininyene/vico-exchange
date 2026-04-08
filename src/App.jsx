@@ -46,15 +46,25 @@ import Users from './pages/admin/Users'
 import Giftcards from './pages/admin/Giftcards'
 import Coins from './pages/admin/Coins'
 import AdminSettings from './pages/admin/Settings'
+import Referrals from './pages/users/Referrals'
+
+import { initOneSignal } from './components/onesignal'
+import { useEffect } from 'react'
 
 
 function App() {
+
+  useEffect(() => {
+    initOneSignal();
+  }, []);
+
+
 
   const router = createBrowserRouter(createRoutesFromElements(
     <>
       {/* Base routes */}
       <Route path='/' element={<BaseLayout />}>
-        <Route index element={<Home />}/>
+        <Route index element={<Home />} />
         <Route path='about' element={<About />} />
         <Route path='services' element={<Services />} />
         <Route path='contact' element={<Contact />} />
@@ -72,11 +82,11 @@ function App() {
       {/* Authenticated Routes */}
       <Route path="/" element={<AuthenticatedLayout />} errorElement={<Error />}>
         {/* Admin Related Routes */}
-        <Route path="admin" loader={async({ request }) => await requireAuth(request, 'admin')}>
+        <Route path="admin" loader={async ({ request }) => await requireAuth(request, 'admin')}>
           <Route path="dashboard" element={<AdminDashboard />} />
           <Route path='users' element={<Users />} />
           <Route path='transactions' element={<AdminTransactions />} />
-          <Route path='vtu-transactions' element={<AdminVtuTransactions/>} />
+          <Route path='vtu-transactions' element={<AdminVtuTransactions />} />
           <Route path='giftcards' element={<Giftcards />} />
           <Route path='coins' element={<Coins />} />
           <Route path='settings' element={<AdminSettings />} />
@@ -91,10 +101,11 @@ function App() {
           <Route path='buy-data' element={<BuyData />} />
           <Route path='buy-airtime' element={<BuyAirtime />} />
           <Route path='buy-electricity-token' element={<BuyElectricity />} />
-          <Route path='buy-cable-tv' element={<BuyCableSubscription />}/>
+          <Route path='buy-cable-tv' element={<BuyCableSubscription />} />
+          <Route path='referrals' element={<Referrals />} />
           <Route path='sell-crypto' element={<SellCrypto />} />
           <Route path='transactions' element={<Transactions />} />
-          <Route path='vtu-transactions' element={<VtuTransactions/>}/>
+          <Route path='vtu-transactions' element={<VtuTransactions />} />
           <Route path='profile' element={<Profile />} />
         </Route>
       </Route>
@@ -103,7 +114,7 @@ function App() {
     </>
   ))
   return (
-    <RouterProvider router={router}/>
+    <RouterProvider router={router} />
   )
 }
 
