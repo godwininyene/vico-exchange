@@ -217,7 +217,6 @@ const Dashboard = () => {
     return () => clearTimeout(timer);
   }, []);
 
-
   return (
     <div className="pb-10">
 

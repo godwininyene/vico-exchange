@@ -92,7 +92,7 @@ const BuyCableSubscription = () => {
 
 
     try {
-      const response = await axios.post("/api/v1/cables/purchase", payload);
+      const response = await axios.post("/api/v1/cables/subscribe", payload);
 
       if (response.data.status === "success") {
         setTransaction(response.data.data.transaction);
