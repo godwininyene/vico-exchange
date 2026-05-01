@@ -2,17 +2,19 @@ import { useEffect, useState } from 'react';
 import InputField from '../../components/InputField';
 import logo from './../../assets/images/logo.png'
 import bg from './../../assets/images/about-03.jpg';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams, useNavigate } from 'react-router-dom';
 import Button from '../../components/Button';
 import { FiLogIn } from "react-icons/fi";
 import axios from '../../lib/axios';
-import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
 export default function Register() {
     const [processing, setProcessing] = useState(false);
     const [errors, setErrors] = useState({})
     const navigate = useNavigate()
+
+    const [searchParams] = useSearchParams();
+    const refId = searchParams.get('refid');
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -22,6 +24,10 @@ export default function Register() {
         try {
             const formData = new FormData(e.target);
             const dataToSend = Object.fromEntries(formData);
+
+            if (refId) {
+                dataToSend.referralId = refId;
+            }
 
             const res = await axios.post('api/v1/users/signup', dataToSend);
 
