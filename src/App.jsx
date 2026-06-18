@@ -37,6 +37,8 @@ import SellCrypto from './pages/users/SellCrypto'
 import Transactions from './pages/users/Transactions'
 import VtuTransactions from './pages/users/VtuTransactions'
 import Profile from './pages/users/Profile'
+import FundWallet from './pages/users/FundWallet'
+import PaymentStatus from './pages/users/PaymentStatus'
 
 //Admin pages
 import AdminDashboard from './pages/admin/Dashboard';
@@ -50,6 +52,7 @@ import Referrals from './pages/users/Referrals'
 
 import { initOneSignal } from './components/onesignal'
 import { useEffect } from 'react'
+
 
 
 function App() {
@@ -107,6 +110,8 @@ function App() {
           <Route path='transactions' element={<Transactions />} />
           <Route path='vtu-transactions' element={<VtuTransactions />} />
           <Route path='profile' element={<Profile />} />
+          <Route path='fund-wallet' element={<FundWallet/>}/>
+          <Route path="payment-status" element={<PaymentStatus />}/>
         </Route>
       </Route>
       {/* Catch-all Route */}

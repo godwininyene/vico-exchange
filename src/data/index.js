@@ -44,6 +44,9 @@ export const userStatusFilterOptions = [
   { value: "active", label: "Active" },
   { value: "pending", label: "Pending" },
   { value: "deactivated", label: "Deactivated" },
+  // Brand New Relationship Targeting Options:
+  { value: "no_reserved_account", label: "Missing Reserved Account ⚠️" },
+  { value: "has_reserved_account", label: "Has Reserved Account ✅" },
 ];
 
 // Gift card types (main categories/brands)

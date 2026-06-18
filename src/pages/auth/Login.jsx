@@ -149,15 +149,6 @@ export default function Login() {
                                 </span>
                             </Link>
 
-                            {/* <h1 className='text-white text-3xl font-black pt-5'>
-                                Trade Crypto & Gift Cards. Buy Airtime & Cheap Data — Instantly.
-                            </h1>
-                            <p className='text-gray-200'>
-                              Your all-in-one platform for crypto exchange, 
-                              gift card trading, VTU top-ups, and cable subscriptions.
-                              Fast payouts, fair rates, zero stress.
-                            </p> */}
-
                             <h1 className='text-white text-3xl font-black pt-5'>
                                 Buy Airtime, Data, Pay Bills & Subscribe Cable — Instantly.
                             </h1>
