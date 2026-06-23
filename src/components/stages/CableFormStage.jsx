@@ -87,9 +87,9 @@ const CableFormStage = ({
         {/* PLAN */}
         <SelectField
           label="Subscription Plan"
-          value={selectedPlan?.value || ""}
+          value={selectedPlan?.plan_code || ""}
           onChange={(e) => {
-            const plan = plans.find((p) => p.value === e.target.value);
+            const plan = plans.find((p) => p.plan_code === e.target.value);
             onPlanSelect(plan);
 
             // reset verification if plan changes (optional but safe)
@@ -99,8 +99,8 @@ const CableFormStage = ({
           options={[
             { label: "Select a plan", value: "" },
             ...plans.map((plan) => ({
-              label: `${plan.display_name} - ₦${Number(plan.price).toLocaleString()}`,
-              value: plan.value,
+              label: `${plan.description} - ₦${Number(plan.amount).toLocaleString()}`,
+              value: plan.plan_code,
             })),
           ]}
         />

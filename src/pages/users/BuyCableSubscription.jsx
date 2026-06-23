@@ -5,6 +5,7 @@ import axios from "../../lib/axios";
 import { toast } from "react-toastify";
 import ProgressStepper from "../../components/ProgressStepper";
 
+// Import your custom local assets
 import dstv from "./../../assets/images/cables/dstv.png";
 import goTv from "./../../assets/images/cables/goTv.png";
 import starTimes from "./../../assets/images/cables/starTimes.png";
@@ -15,7 +16,15 @@ import CableFormStage from "../../components/stages/CableFormStage";
 import VtuPaymentStage from "../../components/stages/VtuPaymentStage";
 import VtuConfirmationStage from "../../components/stages/VtuConfirmationStage";
 
+// 🧩 Static Map linking API responses to local UI Assets
+const LOGO_MAP = {
+  dstv: dstv,
+  gotv: goTv,
+  startimes: starTimes,
+};
+
 const BuyCableSubscription = () => {
+  const [providers, setProviders] = useState([]);
   const [selectedProvider, setSelectedProvider] = useState(null);
   const [decoderNumber, setDecoderNumber] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
@@ -24,6 +33,7 @@ const BuyCableSubscription = () => {
   const [stage, setStage] = useState("select");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [transaction, setTransaction] = useState(null);
+  const [isLoadingProviders, setIsLoadingProviders] = useState(false);
 
   const steps = [
     { id: "select", name: "Select Provider" },
@@ -32,18 +42,37 @@ const BuyCableSubscription = () => {
     { id: "confirmation", name: "Confirmation" },
   ];
 
-  const cables = [
-    { name: "DSTV", logo: dstv, identifier: "dstv" },
-    { name: "GOTV", logo: goTv, identifier: "gotv" },
-    { name: "StarTimes", logo: starTimes, identifier: "startimes" },
-  ];
+  // 🔄 Fetch dynamic providers from Peyflex backend on mount
+  useEffect(() => {
+    const fetchProviders = async () => {
+      setIsLoadingProviders(true);
+      try {
+        const res = await axios.get("/api/v1/cables/providers");
+        const apiProviders = res.data.data.providers || [];
 
-  // Fetch plans from backend when a provider is selected
+        // Decorate the raw api strings with your local design assets safely
+        const decoratedProviders = apiProviders.map((prov) => ({
+          name: prov.name,
+          identifier: prov.identifier.toLowerCase(),
+          logo: LOGO_MAP[prov.identifier.toLowerCase()] || dstv, // Fallback asset if needed
+        }));
+
+        setProviders(decoratedProviders);
+      } catch (err) {
+        toast.error("Unable to load cable providers. Please refresh.");
+      } finally {
+        setIsLoadingProviders(false);
+      }
+    };
+    fetchProviders();
+  }, []);
+
+  // 🔄 Fetch corresponding plans when a provider gets highlighted
   useEffect(() => {
     if (selectedProvider) {
       const fetchPlans = async () => {
         try {
-          const res = await axios.get(`/api/v1/cables/plans?service=${selectedProvider.identifier}`);
+          const res = await axios.get(`/api/v1/cables/plans?provider=${selectedProvider.identifier}`);
           setPlans(res.data.data.plans || []);
         } catch (err) {
           toast.error("Plans currently not available. Please check back later");
@@ -82,14 +111,14 @@ const BuyCableSubscription = () => {
   const handlePaymentConfirmation = async () => {
     setIsSubmitting(true);
 
+    // ✅ Clean payload variables mapped directly to your new controller requirements
     const payload = {
-      serviceID: selectedProvider.identifier,
+      identifier: selectedProvider.identifier,
+      plan: selectedPlan?.plan_code,
+      iuc: decoderNumber,
       phone: phoneNumber,
-      customerID: decoderNumber,
-      variation_code: selectedPlan.value,
       requestId: uuidv4(),
     };
-
 
     try {
       const response = await axios.post("/api/v1/cables/subscribe", payload);
@@ -117,7 +146,7 @@ const BuyCableSubscription = () => {
     setStage("select");
     setTransaction(null);
   };
-
+  
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-900 py-8">
       <ProgressStepper steps={steps} currentStep={stage} />
@@ -134,10 +163,10 @@ const BuyCableSubscription = () => {
 
       {stage === "select" && (
         <DataNetworkSelectionStage
-          networks={cables}
+          networks={providers} // Uses dynamic state now instead of static hardcoding
           onNetworkSelect={handleProviderSelect}
           title="Buy Cable Subscription"
-          description="Choose your cable provider"
+          description={isLoadingProviders ? "Loading available services..." : "Choose your cable provider"}
         />
       )}
 

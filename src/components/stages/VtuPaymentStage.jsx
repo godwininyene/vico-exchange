@@ -18,13 +18,13 @@ const VtuPaymentStage = ({
   const isAirtime = serviceType === "airtime";
   const isElectricity = serviceType === "electricity";
   const isCable = serviceType === "cable";
-
+  
   const amount = isCable
-    ? Number(selectedPlan?.price || 0)
+    ? Number(selectedPlan?.amount || 0)
     : Number(selectedPlan?.amount || 0);
 
   const planLabel = isCable
-    ? selectedPlan?.display_name
+    ? selectedPlan?.description
     : selectedPlan?.label;
 
   return (
